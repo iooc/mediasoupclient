@@ -62,9 +62,9 @@ class TransportOptions {
   SctpParameters? sctpParameters; //?: SctpParameters;
   List<dynamic>? iceServers; //?: RTCIceServer[];
   String? iceTransportPolicy; //?: RTCIceTransportPolicy;
-  dynamic additionalSettings; //?: any;
-  dynamic proprietaryConstraints; //?: any;
-  dynamic appData; //?: any;
+  Map<String, dynamic>? additionalSettings; //?: any;
+  Map<String, dynamic>? proprietaryConstraints; //?: any;
+  Map<String, dynamic>? appData; //?: any;
 
   TransportOptions(
     this.id,
@@ -285,7 +285,11 @@ class Transport extends EnhancedEventEmitter {
 
     // Clone and sanitize additionalSettings.
     options.additionalSettings = utils.clone(options.additionalSettings, {});
-
+    options.additionalSettings!.remove('iceServers');
+    options.additionalSettings!.remove('iceTransportPolicy');
+    options.additionalSettings!.remove('bundlePolicy');
+    options.additionalSettings!.remove('rtcpMuxPolicy');
+    options.additionalSettings!.remove('sdpSemantics');
     // delete additionalSettings.iceServers;
     // delete additionalSettings.iceTransportPolicy;
     // delete additionalSettings.bundlePolicy;

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'dart:math' as Math;
+import 'dart:math' as math;
 
 clone(data, defaultValue) {
   // if (typeof data === 'undefined')
@@ -11,5 +11,5 @@ clone(data, defaultValue) {
 
 /// Generates a random positive integer.
 int generateRandomNumber() {
-  return Math.Random().nextInt(10000000);
+  return math.Random().nextInt(10000000);
 }

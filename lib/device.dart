@@ -352,7 +352,9 @@ class Device {
         when: false,
         message: 'load() [routerRtpCapabilities:$routerRtpCapabilities]');
 
-    routerRtpCapabilities = utils.clone(routerRtpCapabilities, null);
+    // routerRtpCapabilities = utils.clone(routerRtpCapabilities, null);
+    routerRtpCapabilities =
+        RtpCapabilities.fromJson(routerRtpCapabilities!.toJson());
 
     // Temporal handler to get its capabilities.
     HandlerInterface handler; //: HandlerInterface | undefined;
@@ -361,7 +363,7 @@ class Device {
       if (_loaded) throw Exception('already loaded');
 
       // This may throw.
-      ortc.validateRtpCapabilities(routerRtpCapabilities!);
+      ortc.validateRtpCapabilities(routerRtpCapabilities);
 
       handler = _handlerFactory();
 

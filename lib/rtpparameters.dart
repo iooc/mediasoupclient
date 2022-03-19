@@ -51,6 +51,22 @@ class RtpCapabilities {
     }
     return obj;
   }
+
+  String toJson() {
+    var map = <String, String>{};
+    if (codecs != null) {
+      map['codecs'] = jsonEncode(codecs!.map((e) => e.toJson()).toList());
+    }
+    if (headerExtensions != null) {
+      map['headerExtensions'] =
+          jsonEncode(headerExtensions!.map((e) => e.toJson()).toList());
+    }
+    if (fecMechanisms != null) {
+      map['fecMechanisms'] = jsonEncode(fecMechanisms);
+    }
+
+    return jsonEncode(map);
+  }
 }
 
 /**
@@ -151,6 +167,29 @@ class RtpCodecCapability {
 
     return capability;
   }
+
+  String toJson() {
+    var map = <String, dynamic>{};
+
+    map['kind'] = kind;
+    map['mimeType'] = mimeType;
+    map['clockRate'] = clockRate;
+    if (preferredPayloadType != null) {
+      map['preferredPayloadType'] = preferredPayloadType;
+    }
+    if (channels != null) {
+      map['channels'] = channels;
+    }
+    if (parameters != null) {
+      map['parameters'] = jsonEncode(parameters);
+    }
+    if (rtcpFeedback != null) {
+      map['rtcpFeedback'] =
+          jsonEncode(rtcpFeedback!.map((e) => e.toJson()).toList());
+    }
+
+    return jsonEncode(map);
+  }
 }
 
 /**
@@ -219,6 +258,24 @@ class RtpHeaderExtension {
     if (map['direction'] != null) extension.direction = map['direction'];
 
     return extension;
+  }
+
+  String toJson() {
+    var map = <String, dynamic>{};
+
+    map['uri'] = uri;
+    map['preferredId'] = preferredId;
+    if (kind != null) {
+      map['kind'] = kind;
+    }
+    if (preferredEncrypt != null) {
+      map['preferredEncrypt'] = preferredEncrypt;
+    }
+    if (direction != null) {
+      map['direction'] = direction;
+    }
+
+    return jsonEncode(map);
   }
 }
 
@@ -289,6 +346,18 @@ class RtpParameters {
     this.encodings,
     this.rtcp,
   });
+
+  factory RtpParameters.fromJson(String json) {
+    var map = jsonDecode(json);
+
+    var rtpParameters = RtpParameters(map['codecs'], mid: map['mid']);
+  }
+
+  String toJson() {
+    var map = <String, dynamic>{};
+
+    return jsonEncode(map);
+  }
 }
 
 // ignore: slash_for_doc_comments
@@ -340,6 +409,44 @@ class RtpCodecParameters {
     this.parameters,
     this.rtcpFeedback,
   });
+
+  factory RtpCodecParameters.fromJson(String json) {
+    var map = jsonDecode(json);
+
+    var rtpCodecParameters = RtpCodecParameters(
+        map['mimeType'], map['payloadType'], map['clockRate']);
+
+    if (map['channels'] != null) rtpCodecParameters.channels = map['channels'];
+    if (map['parameters'] != null) {
+      rtpCodecParameters.parameters = jsonDecode(map['parameters']);
+    }
+    if (map['rtcpFeedback'] != null) {
+      var list = map['rtcpFeedback'] as List;
+      List<RtcpFeedback> rtcp = [];
+      for (var item in list) {
+        rtcp.add(RtcpFeedback.fromJson(item));
+      }
+      rtpCodecParameters.rtcpFeedback = rtcp;
+    }
+
+    return rtpCodecParameters;
+  }
+
+  String toJson() {
+    var map = <String, dynamic>{};
+
+    map['mimeType'] = mimeType;
+    map['payloadType'] = payloadType;
+    map['clockRate'] = clockRate;
+    if (channels != null) map['channels'] = channels;
+    if (parameters != null) map['parameters'] = jsonEncode(parameters);
+    if (rtcpFeedback != null) {
+      map['rtcpFeedback'] =
+          jsonEncode(rtcpFeedback!.map((e) => e.toJson()).toList());
+    }
+
+    return jsonEncode(map);
+  }
 }
 
 // ignore: slash_for_doc_comments
@@ -373,6 +480,14 @@ class RtcpFeedback {
     if (map['parameter'] != null) rtcp.parameter = map['parameter'];
 
     return rtcp;
+  }
+
+  String toJson() {
+    var map = <String, dynamic>{};
+    map['type'] = type;
+    if (parameter != null) map['parameter'] = parameter;
+
+    return jsonEncode(map);
   }
 }
 
@@ -517,4 +632,28 @@ class RtcpParameters {
     this.reducedSize,
     this.mux,
   });
+
+  factory RtcpParameters.fromJson(String json) {
+    var map = jsonDecode(json);
+
+    var rtcpParameters = RtcpParameters();
+
+    if (map['cname'] != null) rtcpParameters.cname = map['cname'];
+    if (map['reducedSize'] != null) {
+      rtcpParameters.reducedSize = map['reducedSize'];
+    }
+    if (map['mux'] != null) rtcpParameters.mux = map['mux'];
+
+    return rtcpParameters;
+  }
+
+  String toJson() {
+    var map = <String, dynamic>{};
+
+    if (cname != null) map['cname'] = cname;
+    if (reducedSize != null) map['reducedSize'] = reducedSize;
+    if (mux != null) map['mux'] = mux;
+
+    return jsonEncode(map);
+  }
 }
