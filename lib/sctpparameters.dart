@@ -1,0 +1,98 @@
+class SctpCapabilities {
+  NumSctpStreams? numStreams; //: NumSctpStreams;
+
+  SctpCapabilities(this.numStreams);
+}
+
+class NumSctpStreams {
+  /**
+	 * Initially requested number of outgoing SCTP streams.
+	 */
+  int OS; //: number;
+  /**
+	 * Maximum number of incoming SCTP streams.
+	 */
+  int MIS; //: number;
+
+  NumSctpStreams(
+    this.OS,
+    this.MIS,
+  );
+}
+
+class SctpParameters {
+  /**
+	 * Must always equal 5000.
+	 */
+  int port; //: number;
+  /**
+	 * Initially requested number of outgoing SCTP streams.
+	 */
+  int OS; //: number;
+  /**
+	 * Maximum number of incoming SCTP streams.
+	 */
+  int MIS; //: number;
+  /**
+	 * Maximum allowed size for SCTP messages.
+	 */
+  int maxMessageSize; //: number;
+
+  SctpParameters(
+    this.port,
+    this.OS,
+    this.MIS,
+    this.maxMessageSize,
+  );
+}
+
+/**
+ * SCTP stream parameters describe the reliability of a certain SCTP stream.
+ * If ordered is true then maxPacketLifeTime and maxRetransmits must be
+ * false.
+ * If ordered if false, only one of maxPacketLifeTime or maxRetransmits
+ * can be true.
+ */
+class SctpStreamParameters {
+  /**
+	 * SCTP stream id.
+	 */
+  int? streamId; //?: number;
+  /**
+	 * Whether data messages must be received in order. if true the messages will
+	 * be sent reliably. Default true.
+	 */
+  bool? ordered; //?: boolean;
+  /**
+	 * When ordered is false indicates the time (in milliseconds) after which a
+	 * SCTP packet will stop being retransmitted.
+	 */
+  int? maxPacketLifeTime; //?: number;
+  /**
+	 * When ordered is false indicates the maximum number of times a packet will
+	 * be retransmitted.
+	 */
+  int? maxRetransmits; //?: number;
+  /**
+	 * DataChannel priority.
+	 */
+  dynamic priority; //?: RTCPriorityType;
+  /**
+	 * A label which can be used to distinguish this DataChannel from others.
+	 */
+  String? label; //?: string;
+  /**
+	 * Name of the sub-protocol used by this DataChannel.
+	 */
+  String? protocol; //?: string;
+
+  SctpStreamParameters({
+    this.streamId,
+    this.ordered,
+    this.maxPacketLifeTime,
+    this.maxRetransmits,
+    this.priority,
+    this.label,
+    this.protocol,
+  });
+}
