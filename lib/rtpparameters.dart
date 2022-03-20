@@ -351,6 +351,8 @@ class RtpParameters {
     var map = jsonDecode(json);
 
     var rtpParameters = RtpParameters(map['codecs'], mid: map['mid']);
+
+    return rtpParameters;
   }
 
   String toJson() {
