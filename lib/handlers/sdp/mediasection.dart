@@ -532,8 +532,9 @@ class OfferMediaSection extends MediaSection {
 
           var encoding = offerRtpParameters.encodings![0];
           var ssrc = encoding.ssrc;
-          var rtxSsrc =
-              (encoding.rtx && encoding.rtx.ssrc) ? encoding.rtx.ssrc : null;
+          var rtxSsrc = (encoding.rtx != null && encoding.rtx!['ssrc'] != null)
+              ? encoding.rtx!['ssrc']
+              : null;
 
           _mediaObject['ssrcs'] = [];
           _mediaObject['ssrcGroups'] = [];
@@ -624,8 +625,8 @@ class OfferMediaSection extends MediaSection {
   {
     var encoding = offerRtpParameters.encodings![0];
     var ssrc = encoding.ssrc;
-    var rtxSsrc = (encoding.rtx != null && encoding.rtx.ssrc != null)
-        ? encoding.rtx.ssrc
+    var rtxSsrc = (encoding.rtx != null && encoding.rtx!['ssrc'] != null)
+        ? encoding.rtx!['ssrc']
         : null;
 
     if (offerRtpParameters.rtcp!.cname != null &&
@@ -671,15 +672,15 @@ class OfferMediaSection extends MediaSection {
   {
     var encoding = offerRtpParameters.encodings![0];
     var ssrc = encoding.ssrc;
-    var rtxSsrc = (encoding.rtx != null && encoding.rtx.ssrc != null)
-        ? encoding.rtx.ssrc
+    var rtxSsrc = (encoding.rtx != null && encoding.rtx!['ssrc'] != null)
+        ? encoding.rtx!['ssrc']
         : null;
 
     _mediaObject['ssrcs'] = _mediaObject['ssrcs']
         .where((s) => s.id != ssrc && s.id != rtxSsrc)
         .toList();
 
-    if (rtxSsrc) {
+    if (rtxSsrc != null) {
       _mediaObject['ssrcGroups'] = _mediaObject['ssrcGroups']
           .where((group) => group.ssrcs != '$ssrc $rtxSsrc')
           .toList();

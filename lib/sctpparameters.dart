@@ -1,3 +1,7 @@
+// ignore_for_file: slash_for_doc_comments
+
+import 'dart:convert';
+
 class SctpCapabilities {
   NumSctpStreams? numStreams; //: NumSctpStreams;
 
@@ -76,7 +80,7 @@ class SctpStreamParameters {
   /**
 	 * DataChannel priority.
 	 */
-  dynamic priority; //?: RTCPriorityType;
+  String? priority; //?: RTCPriorityType;
   /**
 	 * A label which can be used to distinguish this DataChannel from others.
 	 */
@@ -95,4 +99,39 @@ class SctpStreamParameters {
     this.label,
     this.protocol,
   });
+
+  factory SctpStreamParameters.fromJson(String json) {
+    var map = jsonDecode(json);
+
+    var sctpStream = SctpStreamParameters();
+    if (map['streamId'] != null) sctpStream.streamId = map['streamId'];
+    if (map['ordered'] != null) sctpStream.ordered = map['ordered'];
+    if (map['maxPacketLifeTime'] != null) {
+      sctpStream.maxPacketLifeTime = map['maxPacketLifeTime'];
+    }
+    if (map['maxRetransmits'] != null) {
+      sctpStream.maxRetransmits = map['maxRetransmits'];
+    }
+    if (map['priority'] != null) {
+      sctpStream.priority = jsonDecode(map['priority']);
+    }
+    if (map['label'] != null) sctpStream.label = map['label'];
+    if (map['protocol'] != null) sctpStream.protocol = map['protocol'];
+
+    return sctpStream;
+  }
+
+  String toJson() {
+    var map = <String, dynamic>{};
+
+    if (streamId != null) map['streamId'] = streamId;
+    if (ordered != null) map['ordered'] = ordered;
+    if (maxPacketLifeTime != null) map['maxPacketLifeTime'] = maxPacketLifeTime;
+    if (maxRetransmits != null) map['maxRetransmits'] = maxRetransmits;
+    if (priority != null) map['priority'] = jsonEncode(priority);
+    if (label != null) map['label'] = label;
+    if (protocol != null) map['protocol'] = protocol;
+
+    return jsonEncode(map);
+  }
 }

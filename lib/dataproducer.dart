@@ -12,7 +12,7 @@ class DataProducerOptions {
   String? priority; //?: RTCPriorityType;
   String? label; //?: string;
   String? protocol; //?: string;
-  var appData; //?: any;
+  Map<String, dynamic>? appData; //?: any;
 
   DataProducerOptions(
       {this.ordered,

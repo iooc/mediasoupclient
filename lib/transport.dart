@@ -10,6 +10,7 @@ import 'dataproducer.dart';
 import 'enhancedeventemitter.dart';
 import 'handlers/handlerinterface.dart';
 import 'producer.dart';
+import 'rtpparameters.dart';
 import 'sctpparameters.dart';
 import 'utils.dart' as utils;
 import 'ortc.dart' as ortc;
@@ -668,7 +669,9 @@ class Transport extends EnhancedEventEmitter {
   {
     debugger(when: false, message: 'consume()');
 
-    options.rtpParameters = utils.clone(options.rtpParameters, null);
+    // options.rtpParameters = utils.clone(options.rtpParameters, null);
+    options.rtpParameters =
+        RtpParameters.fromJson(options.rtpParameters.toJson());
 
     if (_closed) {
       throw Exception('closed');
@@ -847,8 +850,10 @@ class Transport extends EnhancedEventEmitter {
   {
     debugger(when: false, message: 'consumeData()');
 
+    // options.sctpStreamParameters =
+    //     utils.clone(options.sctpStreamParameters, null);
     options.sctpStreamParameters =
-        utils.clone(options.sctpStreamParameters, null);
+        SctpStreamParameters.fromJson(options.sctpStreamParameters.toJson());
 
     if (_closed) {
       throw Exception('closed');

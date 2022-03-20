@@ -350,7 +350,32 @@ class RtpParameters {
   factory RtpParameters.fromJson(String json) {
     var map = jsonDecode(json);
 
-    var rtpParameters = RtpParameters(map['codecs'], mid: map['mid']);
+    var list = map['codecs'] as List;
+    List<RtpCodecParameters> codecs = [];
+    for (var item in list) {
+      codecs.add(RtpCodecParameters.fromJson(item));
+    }
+    var rtpParameters = RtpParameters(codecs, mid: map['mid']);
+
+    if (map['headerExtensions'] != null) {
+      var list = map['headerExtensions'] as List;
+      List<RtpHeaderExtensionParameters> extens = [];
+      for (var item in list) {
+        extens.add(RtpHeaderExtensionParameters.fromJson(item));
+      }
+      rtpParameters.headerExtensions = extens;
+    }
+    if (map['encodings'] != null) {
+      var list = map['encodings'] as List;
+      List<RtpEncodingParameters> extens = [];
+      for (var item in list) {
+        extens.add(RtpEncodingParameters.fromJson(item));
+      }
+      rtpParameters.encodings = extens;
+    }
+    if (map['rtcp'] != null) {
+      rtpParameters.rtcp = RtcpParameters.fromJson(map['rtcp']);
+    }
 
     return rtpParameters;
   }
@@ -520,7 +545,7 @@ class RtpEncodingParameters {
 	 * RTX stream information. It must contain a numeric ssrc field indicating
 	 * the RTX SSRC.
 	 */
-  dynamic rtx; //?: { ssrc: number };
+  Map<String, int>? rtx; //?: { ssrc: number };
   // ignore: slash_for_doc_comments
   /**
 	 * It indicates whether discontinuous RTP transmission will be used. Useful
@@ -560,6 +585,70 @@ class RtpEncodingParameters {
     this.priority,
     this.networkPriority,
   });
+
+  factory RtpEncodingParameters.fromJson(String json) {
+    var map = jsonDecode(json);
+
+    var params = RtpEncodingParameters();
+
+    if (map['ssrc'] != null) params.ssrc = map['ssrc'];
+    if (map['rid'] != null) {
+      params.rid = map['rid'];
+    }
+    if (map['codecPayloadType'] != null) {
+      params.codecPayloadType = map['codecPayloadType'];
+    }
+    if (map['rtx'] != null) {
+      params.rtx = jsonDecode(map['rtx']);
+    }
+    if (map['dtx'] != null) {
+      params.dtx = map['dtx'];
+    }
+    if (map['scalabilityMode'] != null) {
+      params.scalabilityMode = map['scalabilityMode'];
+    }
+    if (map['scaleResolutionDownBy'] != null) {
+      params.scaleResolutionDownBy = map['scaleResolutionDownBy'];
+    }
+    if (map['maxBitrate'] != null) {
+      params.maxBitrate = map['maxBitrate'];
+    }
+    if (map['maxFramerate'] != null) {
+      params.maxFramerate = map['maxFramerate'];
+    }
+    if (map['adaptivePtime'] != null) {
+      params.adaptivePtime = map['adaptivePtime'];
+    }
+    if (map['priority'] != null) {
+      params.priority = map['priority'];
+    }
+    if (map['networkPriority'] != null) {
+      params.networkPriority = map['networkPriority'];
+    }
+
+    return params;
+  }
+
+  String toJson() {
+    var map = <String, dynamic>{};
+
+    if (ssrc != null) map['ssrc'] = ssrc;
+    if (rid != null) map['rid'] = rid;
+    if (codecPayloadType != null) map['codecPayloadType'] = codecPayloadType;
+    if (rtx != null) map['rtx'] = jsonEncode(rtx);
+    if (dtx != null) map['dtx'] = dtx;
+    if (scalabilityMode != null) map['scalabilityMode'] = scalabilityMode;
+    if (scaleResolutionDownBy != null) {
+      map['scaleResolutionDownBy'] = scaleResolutionDownBy;
+    }
+    if (maxBitrate != null) map['maxBitrate'] = maxBitrate;
+    if (maxFramerate != null) map['maxFramerate'] = maxFramerate;
+    if (adaptivePtime != null) map['adaptivePtime'] = adaptivePtime;
+    if (priority != null) map['priority'] = priority;
+    if (networkPriority != null) map['networkPriority'] = networkPriority;
+
+    return jsonEncode(map);
+  }
 }
 
 // ignore: slash_for_doc_comments
@@ -599,6 +688,30 @@ class RtpHeaderExtensionParameters {
     this.encrypt,
     this.parameters,
   });
+
+  factory RtpHeaderExtensionParameters.fromJson(String json) {
+    var map = jsonDecode(json);
+
+    var extension = RtpHeaderExtensionParameters(map['uri'], map['id']);
+
+    if (map['encrypt'] != null) extension.encrypt = map['encrypt'];
+    if (map['parameters'] != null) {
+      extension.parameters = jsonDecode(map['parameters']);
+    }
+
+    return extension;
+  }
+
+  String toJson() {
+    var map = <String, dynamic>{};
+
+    map['uri'] = uri;
+    map['id'] = id;
+    if (encrypt != null) map['encrypt'] = encrypt;
+    if (parameters != null) map['parameters'] = jsonEncode(parameters);
+
+    return jsonEncode(map);
+  }
 }
 
 // ignore: slash_for_doc_comments

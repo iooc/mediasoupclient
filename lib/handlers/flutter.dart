@@ -323,15 +323,19 @@ class Chrome74 extends HandlerInterface {
       }
     }
 
-    RtpParameters sendingRtpParameters =
-        utils.clone(_sendingRtpParametersByKind![options.track.kind], {});
+    // RtpParameters sendingRtpParameters =
+    //     utils.clone(_sendingRtpParametersByKind![options.track.kind], {});
+    RtpParameters sendingRtpParameters = RtpParameters.fromJson(
+        _sendingRtpParametersByKind![options.track.kind]!.toJson());
 
     // This may throw.
     sendingRtpParameters.codecs =
         ortc.reduceCodecs(sendingRtpParameters.codecs, options.codec!);
 
-    RtpParameters sendingRemoteRtpParameters =
-        utils.clone(_sendingRemoteRtpParametersByKind![options.track.kind], {});
+    // RtpParameters sendingRemoteRtpParameters =
+    //     utils.clone(_sendingRemoteRtpParametersByKind![options.track.kind], {});
+    RtpParameters sendingRemoteRtpParameters = RtpParameters.fromJson(
+        _sendingRemoteRtpParametersByKind![options.track.kind]!.toJson());
 
     // This may throw.
     sendingRemoteRtpParameters.codecs =
@@ -603,7 +607,8 @@ class Chrome74 extends HandlerInterface {
     // });
     for (var i = 0; i < parameters.encodings!.length; i++) {
       var encoding = parameters.encodings![i];
-      dynamic code = utils.clone(encoding, {});
+      // dynamic code = utils.clone(encoding, {});
+      var code = RTCRtpEncoding.fromMap(encoding.toMap());
       code.ssrc = params;
       parameters.encodings![i] = code;
     }
