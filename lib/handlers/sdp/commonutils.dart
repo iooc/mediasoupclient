@@ -15,8 +15,8 @@ RtpCapabilities extractRtpCapabilities({Map<String, dynamic>? sdpObject} //:
   var gotVideo = false;
 
   for (var m in sdpObject!['media']) {
-    String kind = m.type;
-
+    String kind = m['type'];
+    // print('kind:' + kind);
     switch (kind) {
       case 'audio':
         {
@@ -41,13 +41,14 @@ RtpCapabilities extractRtpCapabilities({Map<String, dynamic>? sdpObject} //:
     }
 
     // Get codecs.
-    for (var rtp in m.rtp) {
+    for (var rtp in m['rtp']) {
+      // print('codec:' + rtp['codec']);
       RtpCodecCapability codec = RtpCodecCapability(
         kind,
-        '$kind/${rtp.codec}',
+        '$kind/${rtp['codec']}',
         rtp.rate,
-        preferredPayloadType: rtp.payload,
-        channels: rtp.encoding,
+        preferredPayloadType: rtp['payload'],
+        channels: rtp['encoding'],
         parameters: {},
         rtcpFeedback: [],
       );
@@ -66,10 +67,10 @@ RtpCapabilities extractRtpCapabilities({Map<String, dynamic>? sdpObject} //:
     }
 
     // Get codec parameters.
-    for (var fmtp in m.fmtp /*|| []*/) {
-      var parameters = sdpTransform.parseParams(fmtp.config);
+    for (var fmtp in m['fmtp'] /*|| []*/) {
+      var parameters = sdpTransform.parseParams(fmtp['config']);
       // var codec = codecsMap.get(fmtp.payload);
-      var codec = codecsMap[fmtp.payload];
+      var codec = codecsMap[fmtp['payload']];
 
       if (codec == null) continue;
 
@@ -83,12 +84,13 @@ RtpCapabilities extractRtpCapabilities({Map<String, dynamic>? sdpObject} //:
     }
 
     // Get RTCP feedback for each codec.
-    for (var fb in m.rtcpFb /* || []*/) {
-      var codec = codecsMap[fb.payload];
+    for (var fb in m['rtcpFb'] /* || []*/) {
+      var codec = codecsMap[fb['payload']];
 
       if (codec == null) continue;
 
-      RtcpFeedback feedback = RtcpFeedback(fb.type, parameter: fb.subtype);
+      RtcpFeedback feedback =
+          RtcpFeedback(fb['type'], parameter: fb['subtype']);
       // {
       // 	type      : fb.type,
       // 	parameter : fb.subtype
@@ -101,13 +103,13 @@ RtpCapabilities extractRtpCapabilities({Map<String, dynamic>? sdpObject} //:
     }
 
     // Get RTP header extensions.
-    for (var ext in m.ext /*|| []*/) {
+    for (var ext in m['ext'] /*|| []*/) {
       // Ignore encrypted extensions (not yet supported in mediasoup).
       if (ext['encrypt-uri'] != null) continue;
 
       RtpHeaderExtension headerExtension = RtpHeaderExtension(
-        ext.uri,
-        ext.value,
+        ext['uri'],
+        ext['value'],
         kind: kind,
       );
       // {

@@ -359,70 +359,69 @@ class Device {
     // Temporal handler to get its capabilities.
     HandlerInterface handler; //: HandlerInterface | undefined;
 
-    try {
-      if (_loaded) throw Exception('already loaded');
+    // try {
+    if (_loaded) throw Exception('already loaded');
 
-      // This may throw.
-      ortc.validateRtpCapabilities(routerRtpCapabilities);
+    // This may throw.
+    ortc.validateRtpCapabilities(routerRtpCapabilities);
 
-      handler = _handlerFactory();
+    handler = _handlerFactory();
 
-      var nativeRtpCapabilities = await handler.getNativeRtpCapabilities();
+    var nativeRtpCapabilities = await handler.getNativeRtpCapabilities();
 
-      debugger(
-          when: false,
-          message:
-              'load() | got native RTP capabilities:$nativeRtpCapabilities');
+    debugger(
+        when: false,
+        message: 'load() | got native RTP capabilities:$nativeRtpCapabilities');
 
-      // This may throw.
-      ortc.validateRtpCapabilities(nativeRtpCapabilities);
+    // This may throw.
+    ortc.validateRtpCapabilities(nativeRtpCapabilities);
 
-      // Get extended RTP capabilities.
-      _extendedRtpCapabilities = ortc.getExtendedRtpCapabilities(
-          nativeRtpCapabilities, routerRtpCapabilities);
+    // Get extended RTP capabilities.
+    _extendedRtpCapabilities = ortc.getExtendedRtpCapabilities(
+        nativeRtpCapabilities, routerRtpCapabilities);
 
-      debugger(
-          when: false,
-          message:
-              'load() | got extended RTP capabilities:$_extendedRtpCapabilities');
+    debugger(
+        when: false,
+        message:
+            'load() | got extended RTP capabilities:$_extendedRtpCapabilities');
 
-      // Check whether we can produce audio/video.
-      _canProduceByKind.audio = ortc.canSend('audio', _extendedRtpCapabilities);
-      _canProduceByKind.video = ortc.canSend('video', _extendedRtpCapabilities);
+    // Check whether we can produce audio/video.
+    _canProduceByKind.audio = ortc.canSend('audio', _extendedRtpCapabilities);
+    _canProduceByKind.video = ortc.canSend('video', _extendedRtpCapabilities);
 
-      // Generate our receiving RTP capabilities for receiving media.
-      _recvRtpCapabilities =
-          ortc.getRecvRtpCapabilities(_extendedRtpCapabilities);
+    // Generate our receiving RTP capabilities for receiving media.
+    _recvRtpCapabilities =
+        ortc.getRecvRtpCapabilities(_extendedRtpCapabilities);
 
-      // This may throw.
-      ortc.validateRtpCapabilities(_recvRtpCapabilities!);
+    // This may throw.
+    ortc.validateRtpCapabilities(_recvRtpCapabilities!);
 
-      debugger(
-          when: false,
-          message:
-              'load() | got receiving RTP capabilities:$_recvRtpCapabilities');
+    debugger(
+        when: false,
+        message:
+            'load() | got receiving RTP capabilities:$_recvRtpCapabilities');
 
-      // Generate our SCTP capabilities.
-      _sctpCapabilities = await handler.getNativeSctpCapabilities();
+    // Generate our SCTP capabilities.
+    _sctpCapabilities = await handler.getNativeSctpCapabilities();
 
-      debugger(
-          when: false,
-          message: 'load() | got native SCTP capabilities:$_sctpCapabilities');
+    debugger(
+        when: false,
+        message: 'load() | got native SCTP capabilities:$_sctpCapabilities');
 
-      // This may throw.
-      ortc.validateSctpCapabilities(_sctpCapabilities!);
+    // This may throw.
+    ortc.validateSctpCapabilities(_sctpCapabilities!);
 
-      debugger(when: false, message: 'load() succeeded');
+    debugger(when: false, message: 'load() succeeded');
 
-      _loaded = true;
+    _loaded = true;
 
-      handler.close();
-    } catch (error) {
-      // if (handler != null)
-      // handler.close();
+    handler.close();
+    // } catch (error) {
+    //   // if (handler != null)
+    //   // handler.close();
 
-      throw error;
-    }
+    //   throw error;
+    // }
   }
 
   /**

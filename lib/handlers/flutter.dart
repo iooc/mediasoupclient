@@ -92,30 +92,30 @@ class Chrome74 extends HandlerInterface {
       'sdpSemantics': 'unified-plan'
     });
 
+    // try {
+    // pc.addTransceiver('audio');
+    // pc.addTransceiver('video');
+    pc.addTransceiver(kind: RTCRtpMediaType.RTCRtpMediaTypeAudio);
+    pc.addTransceiver(kind: RTCRtpMediaType.RTCRtpMediaTypeVideo);
+
+    var offer = await pc.createOffer();
+
     try {
-      // pc.addTransceiver('audio');
-      // pc.addTransceiver('video');
-      pc.addTransceiver(kind: RTCRtpMediaType.RTCRtpMediaTypeAudio);
-      pc.addTransceiver(kind: RTCRtpMediaType.RTCRtpMediaTypeVideo);
+      pc.close();
+    } catch (error) {}
 
-      var offer = await pc.createOffer();
+    var sdpObject = sdpTransform.parse(offer.sdp!);
+    var nativeRtpCapabilities =
+        sdpCommonUtils.extractRtpCapabilities(sdpObject: sdpObject);
 
-      try {
-        pc.close();
-      } catch (error) {}
+    return nativeRtpCapabilities;
+    // } catch (error) {
+    //   try {
+    //     pc.close();
+    //   } catch (error2) {}
 
-      var sdpObject = sdpTransform.parse(offer.sdp!);
-      var nativeRtpCapabilities =
-          sdpCommonUtils.extractRtpCapabilities(sdpObject: sdpObject);
-
-      return nativeRtpCapabilities;
-    } catch (error) {
-      try {
-        pc.close();
-      } catch (error2) {}
-
-      throw error;
-    }
+    //   throw error;
+    // }
   }
 
   @override
