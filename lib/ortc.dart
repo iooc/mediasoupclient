@@ -63,7 +63,7 @@ void validateRtpCodecCapability(RtpCodecCapability codec) //: void
   // 	throw new Exception('invalid codec.mimeType');
 
   // Just override kind with media component of mimeType.
-  codec.kind = mimeTypeMatch[1].group(0)!.toLowerCase(); // as MediaKind;
+  codec.kind = mimeTypeMatch[0].group(1)!.toLowerCase(); // as MediaKind;
 
   // preferredPayloadType is optional.
   // if (codec.preferredPayloadType && typeof codec.preferredPayloadType !== 'number')

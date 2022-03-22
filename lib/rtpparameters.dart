@@ -2,12 +2,15 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+part 'rtpparameters.g.dart';
 
 /**
  * The RTP capabilities define what mediasoup or an endpoint can receive at
  * media level.
  */
-
+@JsonSerializable(explicitToJson: true)
 class RtpCapabilities {
   // ignore: slash_for_doc_comments
   /**
@@ -31,42 +34,10 @@ class RtpCapabilities {
     this.fecMechanisms,
   });
 
-  factory RtpCapabilities.fromJson(String json) {
-    var map = jsonDecode(json);
+  factory RtpCapabilities.fromJson(Map<String, dynamic> json) =>
+      _$RtpCapabilitiesFromJson(json);
 
-    var obj = RtpCapabilities();
-    if (map['codecs'] != null) {
-      obj.codecs = (map['codecs'] as List)
-          .map((e) => RtpCodecCapability.fromJson(e))
-          .toList();
-    }
-    if (map['headerExtensions'] != null) {
-      obj.headerExtensions = (map['headerExtensions'] as List)
-          .map((e) => RtpHeaderExtension.fromJson(e))
-          .toList();
-    }
-    if (map['fecMechanisms'] != null) {
-      obj.fecMechanisms =
-          (map['fecMechanisms'] as List).map((e) => e.toString()).toList();
-    }
-    return obj;
-  }
-
-  String toJson() {
-    var map = <String, String>{};
-    if (codecs != null) {
-      map['codecs'] = jsonEncode(codecs!.map((e) => e.toJson()).toList());
-    }
-    if (headerExtensions != null) {
-      map['headerExtensions'] =
-          jsonEncode(headerExtensions!.map((e) => e.toJson()).toList());
-    }
-    if (fecMechanisms != null) {
-      map['fecMechanisms'] = jsonEncode(fecMechanisms);
-    }
-
-    return jsonEncode(map);
-  }
+  Map<String, dynamic> toJson() => _$RtpCapabilitiesToJson(this);
 }
 
 /**
@@ -92,6 +63,7 @@ class RtpCapabilities {
  * require preferredPayloadType field (if unset, mediasoup will choose a random
  * one). If given, make sure it's in the 96-127 range.
  */
+@JsonSerializable(explicitToJson: true)
 class RtpCodecCapability {
   // ignore: slash_for_doc_comments
   /**
@@ -142,54 +114,10 @@ class RtpCodecCapability {
     this.rtcpFeedback,
   });
 
-  factory RtpCodecCapability.fromJson(String json) {
-    Map map = jsonDecode(json);
+  factory RtpCodecCapability.fromJson(Map<String, dynamic> json) =>
+      _$RtpCodecCapabilityFromJson(json);
 
-    var capability =
-        RtpCodecCapability(map['kind'], map['mimeType'], map['clockRate']);
-    if (map['preferredPayloadType'] != null) {
-      capability.preferredPayloadType = map['preferredPayloadType'];
-    }
-    if (map['channels'] != null) {
-      capability.channels = map['channels'];
-    }
-    if (map['parameters'] != null) {
-      capability.parameters = jsonDecode(map['parameters']);
-    }
-    if (map['rtcpFeedback'] != null) {
-      var list = map['rtcpFeedback'] as List;
-      List<RtcpFeedback> rtcp = [];
-      for (var item in list) {
-        rtcp.add(RtcpFeedback.fromJson(item));
-      }
-      capability.rtcpFeedback = rtcp;
-    }
-
-    return capability;
-  }
-
-  String toJson() {
-    var map = <String, dynamic>{};
-
-    map['kind'] = kind;
-    map['mimeType'] = mimeType;
-    map['clockRate'] = clockRate;
-    if (preferredPayloadType != null) {
-      map['preferredPayloadType'] = preferredPayloadType;
-    }
-    if (channels != null) {
-      map['channels'] = channels;
-    }
-    if (parameters != null) {
-      map['parameters'] = jsonEncode(parameters);
-    }
-    if (rtcpFeedback != null) {
-      map['rtcpFeedback'] =
-          jsonEncode(rtcpFeedback!.map((e) => e.toJson()).toList());
-    }
-
-    return jsonEncode(map);
-  }
+  Map<String, dynamic> toJson() => _$RtpCodecCapabilityToJson(this);
 }
 
 /**
@@ -208,6 +136,7 @@ class RtpCodecCapability {
  * router.rtpCapabilities or mediasoup.getSupportedRtpCapabilities()). It's
  * ignored if present in endpoints' RTP capabilities.
  */
+@JsonSerializable()
 class RtpHeaderExtension {
   // ignore: slash_for_doc_comments
   /**
@@ -247,36 +176,10 @@ class RtpHeaderExtension {
     this.direction,
   });
 
-  factory RtpHeaderExtension.fromJson(String json) {
-    Map map = jsonDecode(json);
+  factory RtpHeaderExtension.fromJson(Map<String, dynamic> json) =>
+      _$RtpHeaderExtensionFromJson(json);
 
-    var extension = RtpHeaderExtension(map['uri'], map['preferredId']);
-    if (map['kind'] != null) extension.kind = map['kind'];
-    if (map['preferredEncrypt'] != null) {
-      extension.preferredEncrypt = map['preferredEncrypt'];
-    }
-    if (map['direction'] != null) extension.direction = map['direction'];
-
-    return extension;
-  }
-
-  String toJson() {
-    var map = <String, dynamic>{};
-
-    map['uri'] = uri;
-    map['preferredId'] = preferredId;
-    if (kind != null) {
-      map['kind'] = kind;
-    }
-    if (preferredEncrypt != null) {
-      map['preferredEncrypt'] = preferredEncrypt;
-    }
-    if (direction != null) {
-      map['direction'] = direction;
-    }
-
-    return jsonEncode(map);
-  }
+  Map<String, dynamic> toJson() => _$RtpHeaderExtensionToJson(this);
 }
 
 // ignore: slash_for_doc_comments
@@ -311,6 +214,7 @@ class RtpHeaderExtension {
  * the associated producer. This applies even if the producer's encodings have
  * rid set.
  */
+@JsonSerializable(explicitToJson: true)
 class RtpParameters {
   // ignore: slash_for_doc_comments
   /**
@@ -347,44 +251,10 @@ class RtpParameters {
     this.rtcp,
   });
 
-  factory RtpParameters.fromJson(String json) {
-    var map = jsonDecode(json);
+  factory RtpParameters.fromJson(Map<String, dynamic> json) =>
+      _$RtpParametersFromJson(json);
 
-    var list = map['codecs'] as List;
-    List<RtpCodecParameters> codecs = [];
-    for (var item in list) {
-      codecs.add(RtpCodecParameters.fromJson(item));
-    }
-    var rtpParameters = RtpParameters(codecs, mid: map['mid']);
-
-    if (map['headerExtensions'] != null) {
-      var list = map['headerExtensions'] as List;
-      List<RtpHeaderExtensionParameters> extens = [];
-      for (var item in list) {
-        extens.add(RtpHeaderExtensionParameters.fromJson(item));
-      }
-      rtpParameters.headerExtensions = extens;
-    }
-    if (map['encodings'] != null) {
-      var list = map['encodings'] as List;
-      List<RtpEncodingParameters> extens = [];
-      for (var item in list) {
-        extens.add(RtpEncodingParameters.fromJson(item));
-      }
-      rtpParameters.encodings = extens;
-    }
-    if (map['rtcp'] != null) {
-      rtpParameters.rtcp = RtcpParameters.fromJson(map['rtcp']);
-    }
-
-    return rtpParameters;
-  }
-
-  String toJson() {
-    var map = <String, dynamic>{};
-
-    return jsonEncode(map);
-  }
+  Map<String, dynamic> toJson() => _$RtpParametersToJson(this);
 }
 
 // ignore: slash_for_doc_comments
@@ -393,6 +263,7 @@ class RtpParameters {
  * of media codecs supported by mediasoup and their settings is defined in the
  * supportedRtpCapabilities.ts file.
  */
+@JsonSerializable(explicitToJson: true)
 class RtpCodecParameters {
   // ignore: slash_for_doc_comments
   /**
@@ -437,43 +308,10 @@ class RtpCodecParameters {
     this.rtcpFeedback,
   });
 
-  factory RtpCodecParameters.fromJson(String json) {
-    var map = jsonDecode(json);
+  factory RtpCodecParameters.fromJson(Map<String, dynamic> json) =>
+      _$RtpCodecParametersFromJson(json);
 
-    var rtpCodecParameters = RtpCodecParameters(
-        map['mimeType'], map['payloadType'], map['clockRate']);
-
-    if (map['channels'] != null) rtpCodecParameters.channels = map['channels'];
-    if (map['parameters'] != null) {
-      rtpCodecParameters.parameters = jsonDecode(map['parameters']);
-    }
-    if (map['rtcpFeedback'] != null) {
-      var list = map['rtcpFeedback'] as List;
-      List<RtcpFeedback> rtcp = [];
-      for (var item in list) {
-        rtcp.add(RtcpFeedback.fromJson(item));
-      }
-      rtpCodecParameters.rtcpFeedback = rtcp;
-    }
-
-    return rtpCodecParameters;
-  }
-
-  String toJson() {
-    var map = <String, dynamic>{};
-
-    map['mimeType'] = mimeType;
-    map['payloadType'] = payloadType;
-    map['clockRate'] = clockRate;
-    if (channels != null) map['channels'] = channels;
-    if (parameters != null) map['parameters'] = jsonEncode(parameters);
-    if (rtcpFeedback != null) {
-      map['rtcpFeedback'] =
-          jsonEncode(rtcpFeedback!.map((e) => e.toJson()).toList());
-    }
-
-    return jsonEncode(map);
-  }
+  Map<String, dynamic> toJson() => _$RtpCodecParametersToJson(this);
 }
 
 // ignore: slash_for_doc_comments
@@ -483,6 +321,7 @@ class RtpCodecParameters {
  * messages. The list of RTCP feedbacks supported by mediasoup is defined in the
  * supportedRtpCapabilities.ts file.
  */
+@JsonSerializable()
 class RtcpFeedback {
   // ignore: slash_for_doc_comments
   /**
@@ -500,22 +339,10 @@ class RtcpFeedback {
     this.parameter,
   });
 
-  factory RtcpFeedback.fromJson(String json) {
-    Map map = jsonDecode(json);
+  factory RtcpFeedback.fromJson(Map<String, dynamic> json) =>
+      _$RtcpFeedbackFromJson(json);
 
-    var rtcp = RtcpFeedback(map['type']);
-    if (map['parameter'] != null) rtcp.parameter = map['parameter'];
-
-    return rtcp;
-  }
-
-  String toJson() {
-    var map = <String, dynamic>{};
-    map['type'] = type;
-    if (parameter != null) map['parameter'] = parameter;
-
-    return jsonEncode(map);
-  }
+  Map<String, dynamic> toJson() => _$RtcpFeedbackToJson(this);
 }
 
 // ignore: slash_for_doc_comments
@@ -523,6 +350,7 @@ class RtcpFeedback {
  * Provides information relating to an encoding, which represents a media RTP
  * stream and its associated RTX stream (if any).
  */
+@JsonSerializable()
 class RtpEncodingParameters {
   // ignore: slash_for_doc_comments
   /**
@@ -586,69 +414,10 @@ class RtpEncodingParameters {
     this.networkPriority,
   });
 
-  factory RtpEncodingParameters.fromJson(String json) {
-    var map = jsonDecode(json);
+  factory RtpEncodingParameters.fromJson(Map<String, dynamic> json) =>
+      _$RtpEncodingParametersFromJson(json);
 
-    var params = RtpEncodingParameters();
-
-    if (map['ssrc'] != null) params.ssrc = map['ssrc'];
-    if (map['rid'] != null) {
-      params.rid = map['rid'];
-    }
-    if (map['codecPayloadType'] != null) {
-      params.codecPayloadType = map['codecPayloadType'];
-    }
-    if (map['rtx'] != null) {
-      params.rtx = jsonDecode(map['rtx']);
-    }
-    if (map['dtx'] != null) {
-      params.dtx = map['dtx'];
-    }
-    if (map['scalabilityMode'] != null) {
-      params.scalabilityMode = map['scalabilityMode'];
-    }
-    if (map['scaleResolutionDownBy'] != null) {
-      params.scaleResolutionDownBy = map['scaleResolutionDownBy'];
-    }
-    if (map['maxBitrate'] != null) {
-      params.maxBitrate = map['maxBitrate'];
-    }
-    if (map['maxFramerate'] != null) {
-      params.maxFramerate = map['maxFramerate'];
-    }
-    if (map['adaptivePtime'] != null) {
-      params.adaptivePtime = map['adaptivePtime'];
-    }
-    if (map['priority'] != null) {
-      params.priority = map['priority'];
-    }
-    if (map['networkPriority'] != null) {
-      params.networkPriority = map['networkPriority'];
-    }
-
-    return params;
-  }
-
-  String toJson() {
-    var map = <String, dynamic>{};
-
-    if (ssrc != null) map['ssrc'] = ssrc;
-    if (rid != null) map['rid'] = rid;
-    if (codecPayloadType != null) map['codecPayloadType'] = codecPayloadType;
-    if (rtx != null) map['rtx'] = jsonEncode(rtx);
-    if (dtx != null) map['dtx'] = dtx;
-    if (scalabilityMode != null) map['scalabilityMode'] = scalabilityMode;
-    if (scaleResolutionDownBy != null) {
-      map['scaleResolutionDownBy'] = scaleResolutionDownBy;
-    }
-    if (maxBitrate != null) map['maxBitrate'] = maxBitrate;
-    if (maxFramerate != null) map['maxFramerate'] = maxFramerate;
-    if (adaptivePtime != null) map['adaptivePtime'] = adaptivePtime;
-    if (priority != null) map['priority'] = priority;
-    if (networkPriority != null) map['networkPriority'] = networkPriority;
-
-    return jsonEncode(map);
-  }
+  Map<String, dynamic> toJson() => _$RtpEncodingParametersToJson(this);
 }
 
 // ignore: slash_for_doc_comments
@@ -660,6 +429,7 @@ class RtpEncodingParameters {
  * mediasoup does not currently support encrypted RTP header extensions and no
  * parameters are currently considered.
  */
+@JsonSerializable()
 class RtpHeaderExtensionParameters {
   // ignore: slash_for_doc_comments
   /**
@@ -689,29 +459,10 @@ class RtpHeaderExtensionParameters {
     this.parameters,
   });
 
-  factory RtpHeaderExtensionParameters.fromJson(String json) {
-    var map = jsonDecode(json);
+  factory RtpHeaderExtensionParameters.fromJson(Map<String, dynamic> json) =>
+      _$RtpHeaderExtensionParametersFromJson(json);
 
-    var extension = RtpHeaderExtensionParameters(map['uri'], map['id']);
-
-    if (map['encrypt'] != null) extension.encrypt = map['encrypt'];
-    if (map['parameters'] != null) {
-      extension.parameters = jsonDecode(map['parameters']);
-    }
-
-    return extension;
-  }
-
-  String toJson() {
-    var map = <String, dynamic>{};
-
-    map['uri'] = uri;
-    map['id'] = id;
-    if (encrypt != null) map['encrypt'] = encrypt;
-    if (parameters != null) map['parameters'] = jsonEncode(parameters);
-
-    return jsonEncode(map);
-  }
+  Map<String, dynamic> toJson() => _$RtpHeaderExtensionParametersToJson(this);
 }
 
 // ignore: slash_for_doc_comments
@@ -724,6 +475,7 @@ class RtpHeaderExtensionParameters {
  *
  * mediasoup assumes reducedSize to always be true.
  */
+@JsonSerializable()
 class RtcpParameters {
   // ignore: slash_for_doc_comments
   /**
@@ -748,27 +500,8 @@ class RtcpParameters {
     this.mux,
   });
 
-  factory RtcpParameters.fromJson(String json) {
-    var map = jsonDecode(json);
+  factory RtcpParameters.fromJson(Map<String, dynamic> json) =>
+      _$RtcpParametersFromJson(json);
 
-    var rtcpParameters = RtcpParameters();
-
-    if (map['cname'] != null) rtcpParameters.cname = map['cname'];
-    if (map['reducedSize'] != null) {
-      rtcpParameters.reducedSize = map['reducedSize'];
-    }
-    if (map['mux'] != null) rtcpParameters.mux = map['mux'];
-
-    return rtcpParameters;
-  }
-
-  String toJson() {
-    var map = <String, dynamic>{};
-
-    if (cname != null) map['cname'] = cname;
-    if (reducedSize != null) map['reducedSize'] = reducedSize;
-    if (mux != null) map['mux'] = mux;
-
-    return jsonEncode(map);
-  }
+  Map<String, dynamic> toJson() => _$RtcpParametersToJson(this);
 }
