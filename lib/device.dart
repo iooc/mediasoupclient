@@ -358,7 +358,7 @@ class Device {
         RtpCapabilities.fromJson(routerRtpCapabilities!.toJson());
 
     // Temporal handler to get its capabilities.
-    HandlerInterface handler; //: HandlerInterface | undefined;
+    HandlerInterface? handler; //: HandlerInterface | undefined;
 
     try {
       if (_loaded) throw Exception('already loaded');
@@ -368,7 +368,7 @@ class Device {
 
       handler = _handlerFactory();
 
-      var nativeRtpCapabilities = await handler.getNativeRtpCapabilities();
+      var nativeRtpCapabilities = await handler!.getNativeRtpCapabilities();
 
       debugger(
           when: false,
@@ -421,8 +421,9 @@ class Device {
 
       handler.close();
     } catch (error) {
-      // if (handler != null)
-      // handler.close();
+      if (handler != null) {
+        handler.close();
+      }
 
       throw error;
     }
