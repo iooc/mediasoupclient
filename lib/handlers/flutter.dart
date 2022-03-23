@@ -12,6 +12,7 @@ import '../utils.dart' as utils;
 import '../ortc.dart' as ortc;
 import 'package:sdp_transform/sdp_transform.dart' as sdpTransform;
 import 'sdp/commonutils.dart' as sdpCommonUtils;
+import 'sdp/sdpobject.dart';
 import 'sdp/unifiedplanutils.dart' as sdpUnifiedPlanUtils;
 import '../scalabilitymodes.dart' as scalabilityMode;
 
@@ -106,7 +107,7 @@ class Chrome74 extends HandlerInterface {
 
     var sdpObject = sdpTransform.parse(offer.sdp!);
     var nativeRtpCapabilities =
-        sdpCommonUtils.extractRtpCapabilities(sdpObject: sdpObject);
+        sdpCommonUtils.extractRtpCapabilities(SdpObject.fromJson(sdpObject));
 
     return nativeRtpCapabilities;
     // } catch (error) {

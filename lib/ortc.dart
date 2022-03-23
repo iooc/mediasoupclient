@@ -163,8 +163,9 @@ void validateRtpHeaderExtension(RtpHeaderExtension ext) //: void
   // if (ext.preferredEncrypt|=null && typeof ext.preferredEncrypt !== 'boolean')
   // 	throw new TypeError('invalid ext.preferredEncrypt');
   // else
-  // if (!ext.preferredEncrypt!)
-  // 	ext.preferredEncrypt = false;
+  if (ext.preferredEncrypt == null || !ext.preferredEncrypt!) {
+    ext.preferredEncrypt = false;
+  }
 
   // direction is optional. If unset set it to sendrecv.
   // if (ext.direction && typeof ext.direction !== 'string')
@@ -526,18 +527,18 @@ void validateSctpStreamParameters(SctpStreamParameters params) //: void
 /**
  * Generate extended RTP capabilities for sending and receiving.
  */
-dynamic getExtendedRtpCapabilities(
+ExtendedRtpCapabilities getExtendedRtpCapabilities(
     RtpCapabilities localCaps, RtpCapabilities remoteCaps) //: any
 {
   var extendedRtpCapabilities =
-      RtpCapabilities(codecs: [], headerExtensions: []);
+      ExtendedRtpCapabilities(codecs: [], headerExtensions: []);
 
   // Match media codecs and keep the order preferred by remoteCaps.
   for (var remoteCodec in remoteCaps.codecs! /*|| []*/) {
     if (isRtxCodec(remoteCodec)) continue;
 
-    var matchingLocalCodec = (localCaps.codecs /*|| []*/)!
-        .firstWhere((RtpCodecCapability localCodec) => (matchCodecs(
+    var matchingLocalCodec = (localCaps.codecs /*|| []*/)
+        ?.firstWhereOrNull((RtpCodecCapability localCodec) => (matchCodecs(
               localCodec,
               remoteCodec,
               strict: true,
@@ -546,31 +547,29 @@ dynamic getExtendedRtpCapabilities(
 
     if (matchingLocalCodec == null) continue;
 
-    dynamic extendedCodec = RtpCodecCapability(matchingLocalCodec.kind,
-        matchingLocalCodec.mimeType, matchingLocalCodec.clockRate,
-        channels: matchingLocalCodec.channels,
-        // localPayloadType     : matchingLocalCodec.preferredPayloadType,
+    var extendedCodec = ExtendedRtpCodec(
+        kind: matchingLocalCodec.kind,
+        mimeType: matchingLocalCodec.mimeType,
+        clockRate: matchingLocalCodec.clockRate,
+        channels: matchingLocalCodec.channels ?? 1,
+        localPayloadType: matchingLocalCodec.preferredPayloadType,
         // localRtxPayloadType  : undefined,
-        // remotePayloadType    : remoteCodec.preferredPayloadType,
+        remotePayloadType: remoteCodec.preferredPayloadType,
         // remoteRtxPayloadType : undefined,
-        // localParameters      : matchingLocalCodec.parameters,
-        // remoteParameters     : remoteCodec.parameters,
+        localParameters: matchingLocalCodec.parameters!,
+        remoteParameters: remoteCodec.parameters!,
         rtcpFeedback: reduceRtcpFeedback(matchingLocalCodec, remoteCodec));
-    extendedCodec.localPayloadType = matchingLocalCodec.preferredPayloadType;
-    extendedCodec.remotePayloadType = remoteCodec.preferredPayloadType;
-    extendedCodec.localParameters = matchingLocalCodec.parameters;
-    extendedCodec.remoteParameters = remoteCodec.parameters;
 
     extendedRtpCapabilities.codecs!.add(extendedCodec);
   }
 
   // Match RTX codecs.
-  for (dynamic extendedCodec in extendedRtpCapabilities.codecs!) {
-    var matchingLocalRtxCodec = localCaps.codecs!.firstWhere(
+  for (var extendedCodec in extendedRtpCapabilities.codecs!) {
+    var matchingLocalRtxCodec = localCaps.codecs?.firstWhereOrNull(
         (RtpCodecCapability localCodec) => (isRtxCodec(localCodec) &&
             localCodec.parameters!['apt'] == extendedCodec.localPayloadType));
 
-    var matchingRemoteRtxCodec = remoteCaps.codecs!.firstWhere(
+    var matchingRemoteRtxCodec = remoteCaps.codecs?.firstWhereOrNull(
         (RtpCodecCapability remoteCodec) => (isRtxCodec(remoteCodec) &&
             remoteCodec.parameters!['apt'] == extendedCodec.remotePayloadType));
 
@@ -584,27 +583,21 @@ dynamic getExtendedRtpCapabilities(
 
   // Match header extensions.
   for (var remoteExt in remoteCaps.headerExtensions!) {
-    var matchingLocalExt = localCaps.headerExtensions!.firstWhere(
-        (RtpHeaderExtension localExt) =>
-            (matchHeaderExtensions(localExt, remoteExt)));
+    var matchingLocalExt = localCaps.headerExtensions!.firstWhereOrNull(
+        (localExt) => (matchHeaderExtensions(localExt, remoteExt)));
 
     if (matchingLocalExt == null) continue;
 
-    dynamic extendedExt = Object();
-    extendedExt.kind = remoteExt.kind;
-    extendedExt.uri = remoteExt.uri;
-    extendedExt.sendId = matchingLocalExt.preferredId;
-    extendedExt.recvId = remoteExt.preferredId;
-    extendedExt.encrypt = matchingLocalExt.preferredEncrypt;
-    extendedExt.direction = 'sendrecv';
-    // {
-    // 	kind      : remoteExt.kind,
-    // 	uri       : remoteExt.uri,
-    // 	sendId    : matchingLocalExt.preferredId,
-    // 	recvId    : remoteExt.preferredId,
-    // 	encrypt   : matchingLocalExt.preferredEncrypt,
-    // 	direction : 'sendrecv'
-    // };
+    var extendedExt = ExtendedRtpHeaderExtension(
+      // {
+      kind: remoteExt.kind!,
+      uri: remoteExt.uri,
+      sendId: matchingLocalExt.preferredId,
+      recvId: remoteExt.preferredId,
+      encrypt: matchingLocalExt.preferredEncrypt!,
+      direction: 'sendrecv',
+      // };
+    );
 
     switch (remoteExt.direction) {
       case 'sendrecv':
@@ -929,9 +922,10 @@ RtpParameters generateProbatorRtpParameters(
 /**
  * Whether media can be sent based on the given RTP capabilities.
  */
-bool canSend(String kind, extendedRtpCapabilities) //: boolean
+bool canSend(
+    String kind, ExtendedRtpCapabilities extendedRtpCapabilities) //: boolean
 {
-  return extendedRtpCapabilities.codecs.some((codec) => codec.kind == kind);
+  return extendedRtpCapabilities.codecs!.any((codec) => codec.kind == kind);
 }
 
 /**
@@ -1057,20 +1051,32 @@ bool matchHeaderExtensions(
 }
 
 List<RtcpFeedback> reduceRtcpFeedback(
-  codecA, //: RtpCodecCapability | RtpCodecParameters,
-  codecB, //: RtpCodecCapability | RtpCodecParameters
+  RtpCodecCapability codecA, //: RtpCodecCapability | RtpCodecParameters,
+  RtpCodecCapability codecB, //: RtpCodecCapability | RtpCodecParameters
 ) //: RtcpFeedback[]
 {
   List<RtcpFeedback> reducedRtcpFeedback = [];
 
-  for (var aFb in codecA.rtcpFeedback /*|| []*/) {
-    var matchingBFb = (codecB.rtcpFeedback /*|| []*/).firstWhere(
+  for (var aFb in codecA.rtcpFeedback! /*|| []*/) {
+    var matchingBFb = (codecB.rtcpFeedback /*|| []*/)?.firstWhere(
         (RtcpFeedback bFb) => (bFb.type == aFb.type &&
             (bFb.parameter == aFb.parameter ||
                 (bFb.parameter == null && aFb.parameter == null))));
 
-    if (matchingBFb) reducedRtcpFeedback.add(matchingBFb);
+    if (matchingBFb != null) reducedRtcpFeedback.add(matchingBFb);
   }
 
   return reducedRtcpFeedback;
+}
+
+class ExtendedRtpCapabilities extends RtpCapabilities {
+  @override
+  final List<ExtendedRtpCodec>? codecs;
+  @override
+  final List<ExtendedRtpHeaderExtension>? headerExtensions;
+
+  ExtendedRtpCapabilities({
+    this.codecs = const [],
+    this.headerExtensions = const [],
+  });
 }

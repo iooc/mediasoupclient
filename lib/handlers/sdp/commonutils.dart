@@ -2,20 +2,22 @@ import '../../rtpparameters.dart';
 import '../../transport.dart';
 import 'package:sdp_transform/sdp_transform.dart' as sdpTransform;
 
-RtpCapabilities extractRtpCapabilities({Map<String, dynamic>? sdpObject} //:
+import 'sdpobject.dart';
+
+RtpCapabilities extractRtpCapabilities(SdpObject sdpObject //:
     //{ sdpObject: any }
     ) //: RtpCapabilities
 {
   // Map of RtpCodecParameters indexed by payload type.
-  Map<int, RtpCodecCapability> codecsMap = new Map();
+  Map<int, RtpCodecCapability> codecsMap = {};
   // Array of RtpHeaderExtensions.
   List<RtpHeaderExtension> headerExtensions = [];
   // Whether a m=audio/video section has been already found.
   var gotAudio = false;
   var gotVideo = false;
 
-  for (var m in sdpObject!['media']) {
-    String kind = m['type'];
+  for (var m in sdpObject.media) {
+    String kind = m.type!;
     // print('kind:' + kind);
     switch (kind) {
       case 'audio':
@@ -41,14 +43,14 @@ RtpCapabilities extractRtpCapabilities({Map<String, dynamic>? sdpObject} //:
     }
 
     // Get codecs.
-    for (var rtp in m['rtp']) {
+    for (var rtp in m.rtp!) {
       // print('codec:' + rtp['codec']);
       RtpCodecCapability codec = RtpCodecCapability(
         kind,
-        '$kind/${rtp['codec']}',
+        '$kind/${rtp.codec}',
         rtp.rate,
-        preferredPayloadType: rtp['payload'],
-        channels: rtp['encoding'],
+        preferredPayloadType: rtp.payload,
+        channels: rtp.encoding,
         parameters: {},
         rtcpFeedback: [],
       );
@@ -67,30 +69,29 @@ RtpCapabilities extractRtpCapabilities({Map<String, dynamic>? sdpObject} //:
     }
 
     // Get codec parameters.
-    for (var fmtp in m['fmtp'] /*|| []*/) {
-      var parameters = sdpTransform.parseParams(fmtp['config']);
+    for (var fmtp in m.fmtp! /*|| []*/) {
+      var parameters = sdpTransform.parseParams(fmtp.config);
       // var codec = codecsMap.get(fmtp.payload);
-      var codec = codecsMap[fmtp['payload']];
+      var codec = codecsMap[fmtp.payload];
 
       if (codec == null) continue;
 
       // Specials case to convert parameter value to string.
-      if (parameters != null && parameters['profile-level-id'])
-        // parameters['profile-level-id'] = String(parameters['profile-level-id']);
+      if (parameters.isNotEmpty && parameters['profile-level-id'] != null) {
         parameters['profile-level-id'] =
             parameters['profile-level-id'].toString();
+      }
 
       codec.parameters = parameters;
     }
 
     // Get RTCP feedback for each codec.
-    for (var fb in m['rtcpFb'] /* || []*/) {
-      var codec = codecsMap[fb['payload']];
+    for (var fb in m.rtcpFb! /* || []*/) {
+      var codec = codecsMap[fb.payload];
 
       if (codec == null) continue;
 
-      RtcpFeedback feedback =
-          RtcpFeedback(fb['type'], parameter: fb['subtype']);
+      RtcpFeedback feedback = RtcpFeedback(fb.type, parameter: fb.subtype);
       // {
       // 	type      : fb.type,
       // 	parameter : fb.subtype
@@ -103,13 +104,13 @@ RtpCapabilities extractRtpCapabilities({Map<String, dynamic>? sdpObject} //:
     }
 
     // Get RTP header extensions.
-    for (var ext in m['ext'] /*|| []*/) {
+    for (var ext in m.ext! /*|| []*/) {
       // Ignore encrypted extensions (not yet supported in mediasoup).
-      if (ext['encrypt-uri'] != null) continue;
+      if (ext.encryptUri != null) continue;
 
       RtpHeaderExtension headerExtension = RtpHeaderExtension(
-        ext['uri'],
-        ext['value'],
+        ext.uri!,
+        ext.value!,
         kind: kind,
       );
       // {
@@ -142,7 +143,7 @@ DtlsParameters extractDtlsParameters({Map<String, dynamic>? sdpObject} //:
       (m /*: { iceUfrag: string; port: number }*/) =>
           (m.iceUfrag && m.port != 0));
 
-  if (mediaObject == null) throw new Exception('no active media section found');
+  if (mediaObject == null) throw Exception('no active media section found');
 
   // var fingerprint = mediaObject.fingerprint || sdpObject.fingerprint;
   var fingerprint = mediaObject.fingerprint;

@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'enhancedeventemitter.dart';
 import 'handlers/flutter.dart';
 import 'handlers/handlerinterface.dart';
+import 'ortc.dart';
 import 'rtpparameters.dart';
 import 'sctpparameters.dart';
 import 'transport.dart';
@@ -173,7 +174,7 @@ class Device {
   // Loaded flag.
   bool _loaded = false;
   // Extended RTP capabilities.
-  RtpCapabilities? _extendedRtpCapabilities; //?: any;
+  ExtendedRtpCapabilities? _extendedRtpCapabilities; //?: any;
   // Local RTP capabilities for receiving media.
   RtpCapabilities? _recvRtpCapabilities; //?: RtpCapabilities;
   // Whether we can produce audio/video based on computed extended RTP
@@ -386,8 +387,8 @@ class Device {
             'load() | got extended RTP capabilities:$_extendedRtpCapabilities');
 
     // Check whether we can produce audio/video.
-    _canProduceByKind.audio = ortc.canSend('audio', _extendedRtpCapabilities);
-    _canProduceByKind.video = ortc.canSend('video', _extendedRtpCapabilities);
+    _canProduceByKind.audio = ortc.canSend('audio', _extendedRtpCapabilities!);
+    _canProduceByKind.video = ortc.canSend('video', _extendedRtpCapabilities!);
 
     // Generate our receiving RTP capabilities for receiving media.
     _recvRtpCapabilities =

@@ -29,9 +29,9 @@ class RtpCapabilities {
   List<String>? fecMechanisms;
 
   RtpCapabilities({
-    this.codecs,
-    this.headerExtensions,
-    this.fecMechanisms,
+    this.codecs = const [],
+    this.headerExtensions = const [],
+    this.fecMechanisms = const [],
   });
 
   factory RtpCapabilities.fromJson(Map<String, dynamic> json) =>
@@ -109,9 +109,9 @@ class RtpCodecCapability {
     this.mimeType,
     this.clockRate, {
     this.preferredPayloadType,
-    this.channels,
-    this.parameters,
-    this.rtcpFeedback,
+    this.channels = 1,
+    this.parameters = const {},
+    this.rtcpFeedback = const [],
   });
 
   factory RtpCodecCapability.fromJson(Map<String, dynamic> json) =>
@@ -120,10 +120,14 @@ class RtpCodecCapability {
   Map<String, dynamic> toJson() => _$RtpCodecCapabilityToJson(this);
 }
 
-/**
- * Direction of RTP header extension.
- */
+/// Direction of RTP header extension.
 // String RtpHeaderExtensionDirection = 'sendrecv' | 'sendonly' | 'recvonly' | 'inactive';
+enum RtpHeaderDirection {
+  sendrecv,
+  sendonly,
+  recvonly,
+  inactive,
+}
 
 // ignore: slash_for_doc_comments
 /**
@@ -504,4 +508,53 @@ class RtcpParameters {
       _$RtcpParametersFromJson(json);
 
   Map<String, dynamic> toJson() => _$RtcpParametersToJson(this);
+}
+
+class ExtendedRtpCodec extends RtpCodecCapability {
+  int? localPayloadType;
+  int? localRtxPayloadType;
+  int? remotePayloadType;
+  int? remoteRtxPayloadType;
+  Map<dynamic, dynamic> localParameters;
+  Map<dynamic, dynamic> remoteParameters;
+
+  ExtendedRtpCodec({
+    required String kind,
+    required String mimeType,
+    required int clockRate,
+    int channels = 1,
+    List<RtcpFeedback> rtcpFeedback = const [],
+    this.localPayloadType,
+    this.localRtxPayloadType,
+    this.remotePayloadType,
+    this.remoteRtxPayloadType,
+    required this.localParameters,
+    required this.remoteParameters,
+  }) : super(
+          kind,
+          mimeType,
+          clockRate,
+          channels: channels,
+          rtcpFeedback: rtcpFeedback,
+        );
+}
+
+class ExtendedRtpHeaderExtension extends RtpHeaderExtension {
+  final int sendId;
+  final int recvId;
+  final bool encrypt;
+
+  ExtendedRtpHeaderExtension({
+    required String kind,
+    required String uri,
+    required this.sendId,
+    required this.recvId,
+    required this.encrypt,
+    required String direction,
+  }) : super(
+          uri,
+          0,
+          kind: kind,
+          direction: direction,
+        );
 }

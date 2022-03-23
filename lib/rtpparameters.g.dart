@@ -9,14 +9,19 @@ part of 'rtpparameters.dart';
 RtpCapabilities _$RtpCapabilitiesFromJson(Map<String, dynamic> json) =>
     RtpCapabilities(
       codecs: (json['codecs'] as List<dynamic>?)
-          ?.map((e) => RtpCodecCapability.fromJson(e as Map<String, dynamic>))
-          .toList(),
+              ?.map(
+                  (e) => RtpCodecCapability.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       headerExtensions: (json['headerExtensions'] as List<dynamic>?)
-          ?.map((e) => RtpHeaderExtension.fromJson(e as Map<String, dynamic>))
-          .toList(),
+              ?.map(
+                  (e) => RtpHeaderExtension.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       fecMechanisms: (json['fecMechanisms'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$RtpCapabilitiesToJson(RtpCapabilities instance) =>
@@ -33,11 +38,12 @@ RtpCodecCapability _$RtpCodecCapabilityFromJson(Map<String, dynamic> json) =>
       json['mimeType'] as String,
       json['clockRate'] as int,
       preferredPayloadType: json['preferredPayloadType'] as int?,
-      channels: json['channels'] as int?,
-      parameters: json['parameters'] as Map<String, dynamic>?,
+      channels: json['channels'] as int? ?? 1,
+      parameters: json['parameters'] as Map<dynamic, dynamic>? ?? const {},
       rtcpFeedback: (json['rtcpFeedback'] as List<dynamic>?)
-          ?.map((e) => RtcpFeedback.fromJson(e as Map<String, dynamic>))
-          .toList(),
+              ?.map((e) => RtcpFeedback.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$RtpCodecCapabilityToJson(RtpCodecCapability instance) =>

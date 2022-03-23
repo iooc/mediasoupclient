@@ -3,6 +3,7 @@
 import 'dart:developer';
 
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 import 'consumer.dart';
 import 'dataconsumer.dart';
@@ -14,6 +15,8 @@ import 'rtpparameters.dart';
 import 'sctpparameters.dart';
 import 'utils.dart' as utils;
 import 'ortc.dart' as ortc;
+
+part 'transport.g.dart';
 
 class InternalTransportOptions extends TransportOptions {
   String direction; //: 'send' | 'recv';
@@ -114,6 +117,7 @@ class IceParameters {
   });
 }
 
+@JsonSerializable()
 class IceCandidate {
   /**
 	 * Unique identifier that allows ICE to correlate candidates that appear on
@@ -154,6 +158,11 @@ class IceCandidate {
     this.type,
     this.tcpType,
   );
+
+  factory IceCandidate.fromJson(Map<String, dynamic> json) =>
+      _$IceCandidateFromJson(json);
+
+  Map<String, dynamic> toJson() => _$IceCandidateToJson(this);
 }
 
 class DtlsParameters {
