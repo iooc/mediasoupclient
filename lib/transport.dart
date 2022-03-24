@@ -84,8 +84,11 @@ class TransportOptions {
   });
 }
 
+/// 定义服务器和客户端的生产能力
 class CanProduceByKind {
+  /// 是否能生产音频
   bool audio; //: boolean;
+  /// 是否能生产视频
   bool video; //: boolean;
   // [key: string]: boolean;
   Map<String, bool>? keys;

@@ -416,7 +416,7 @@ class Device {
       ortc.validateSctpCapabilities(_sctpCapabilities!);
 
       debugger(when: false, message: 'load() succeeded');
-
+      // print('来了么？');
       _loaded = true;
 
       handler.close();
@@ -424,7 +424,7 @@ class Device {
       if (handler != null) {
         handler.close();
       }
-
+      // print('异常么？');
       throw error;
     }
   }
@@ -437,12 +437,19 @@ class Device {
 	 */
   bool canProduce(String kind /*: MediaKind*/) //: boolean
   {
-    if (!_loaded)
+    if (!_loaded) {
       throw Exception('not loaded');
-    else if (kind != 'audio' && kind != 'video')
+    } else if (kind != 'audio' && kind != 'video') {
       throw Exception('invalid kind "$kind"');
+    }
 
-    return _canProduceByKind.keys![kind]!;
+    // return _canProduceByKind.keys![kind]!;
+    if (kind == 'video') {
+      return _canProduceByKind.video;
+    } else if (kind == 'audio') {
+      return _canProduceByKind.audio;
+    }
+    return false;
   }
 
   /**

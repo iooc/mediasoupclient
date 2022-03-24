@@ -2,12 +2,22 @@
 
 import 'dart:convert';
 
+import 'package:json_annotation/json_annotation.dart';
+
+part 'sctpparameters.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class SctpCapabilities {
   NumSctpStreams? numStreams; //: NumSctpStreams;
 
   SctpCapabilities(this.numStreams);
+  factory SctpCapabilities.fromJson(Map<String, dynamic> json) =>
+      _$SctpCapabilitiesFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SctpCapabilitiesToJson(this);
 }
 
+@JsonSerializable()
 class NumSctpStreams {
   /**
 	 * Initially requested number of outgoing SCTP streams.
@@ -22,8 +32,13 @@ class NumSctpStreams {
     this.OS,
     this.MIS,
   );
+  factory NumSctpStreams.fromJson(Map<String, dynamic> json) =>
+      _$NumSctpStreamsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$NumSctpStreamsToJson(this);
 }
 
+@JsonSerializable()
 class SctpParameters {
   /**
 	 * Must always equal 5000.
@@ -48,6 +63,10 @@ class SctpParameters {
     this.MIS,
     this.maxMessageSize,
   );
+  factory SctpParameters.fromJson(Map<String, dynamic> json) =>
+      _$SctpParametersFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SctpParametersToJson(this);
 }
 
 /**

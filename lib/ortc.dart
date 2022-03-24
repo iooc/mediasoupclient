@@ -559,7 +559,7 @@ ExtendedRtpCapabilities getExtendedRtpCapabilities(
         localParameters: matchingLocalCodec.parameters!,
         remoteParameters: remoteCodec.parameters!,
         rtcpFeedback: reduceRtcpFeedback(matchingLocalCodec, remoteCodec));
-
+    // print(matchingLocalCodec.kind);
     extendedRtpCapabilities.codecs!.add(extendedCodec);
   }
 
