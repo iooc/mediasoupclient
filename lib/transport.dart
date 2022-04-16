@@ -99,6 +99,7 @@ class CanProduceByKind {
   }
 }
 
+@JsonSerializable()
 class IceParameters {
   /**
 	 * ICE username fragment.
@@ -118,6 +119,11 @@ class IceParameters {
     this.password, {
     this.iceLite,
   });
+
+  factory IceParameters.fromJson(Map<String, dynamic> json) =>
+      _$IceParametersFromJson(json);
+
+  Map<String, dynamic> toJson() => _$IceParametersToJson(this);
 }
 
 @JsonSerializable()
@@ -168,6 +174,7 @@ class IceCandidate {
   Map<String, dynamic> toJson() => _$IceCandidateToJson(this);
 }
 
+@JsonSerializable(explicitToJson: true)
 class DtlsParameters {
   /**
 	 * DTLS role. Default 'auto'.
@@ -182,6 +189,11 @@ class DtlsParameters {
     this.fingerprints, {
     this.role,
   });
+
+  factory DtlsParameters.fromJson(Map<String, dynamic> json) =>
+      _$DtlsParametersFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DtlsParametersToJson(this);
 }
 
 /**
@@ -190,6 +202,7 @@ class DtlsParameters {
  * certificate fingerprint value (in lowercase hex string as expressed utilizing
  * the syntax of "fingerprint" in RFC 4572 Section 5).
  */
+@JsonSerializable()
 class DtlsFingerprint {
   String algorithm; //: string;
   String value; //: string;
@@ -198,6 +211,11 @@ class DtlsFingerprint {
     this.algorithm,
     this.value,
   );
+
+  factory DtlsFingerprint.fromJson(Map<String, dynamic> json) =>
+      _$DtlsFingerprintFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DtlsFingerprintToJson(this);
 }
 
 // export type DtlsRole = 'auto' | 'client' | 'server';
@@ -209,13 +227,18 @@ class DtlsFingerprint {
 // 	| 'failed'
 // 	| 'disconnected'
 // 	| 'closed';
-
+@JsonSerializable()
 class PlainRtpParameters {
   String ip; //: string;
   int ipVersion; //: 4 | 6;
   int port; //: number;
 
   PlainRtpParameters(this.ip, this.ipVersion, this.port);
+
+  factory PlainRtpParameters.fromJson(Map<String, dynamic> json) =>
+      _$PlainRtpParametersFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PlainRtpParametersToJson(this);
 }
 
 // const logger = new Logger('Transport');
