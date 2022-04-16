@@ -10,6 +10,7 @@ import 'dataconsumer.dart';
 import 'dataproducer.dart';
 import 'enhancedeventemitter.dart';
 import 'handlers/handlerinterface.dart';
+import 'ortc.dart';
 import 'producer.dart';
 import 'rtpparameters.dart';
 import 'sctpparameters.dart';
@@ -21,7 +22,7 @@ part 'transport.g.dart';
 class InternalTransportOptions extends TransportOptions {
   String direction; //: 'send' | 'recv';
   Function? handlerFactory; //: HandlerFactory;
-  dynamic extendedRtpCapabilities; //: any;
+  ExtendedRtpCapabilities? extendedRtpCapabilities; //: any;
   CanProduceByKind? canProduceByKind; //: CanProduceByKind;
 
   @override
@@ -156,7 +157,7 @@ class IceCandidate {
   /**
 	 * The type of TCP candidate.
 	 */
-  String tcpType; //: 'active' | 'passive' | 'so';
+  String? tcpType; //: 'active' | 'passive' | 'so';
 
   IceCandidate(
     this.foundation,
@@ -264,20 +265,21 @@ class Transport extends EnhancedEventEmitter {
   // App custom data.
   dynamic _appData; //: any;
   // Map of Producers indexed by id.
-  Map<String, Producer> _producers = {}; //: Map<string, Producer> = new Map();
+  final Map<String, Producer> _producers =
+      {}; //: Map<string, Producer> = new Map();
   // Map of Consumers indexed by id.
-  Map<String, Consumer> _consumers = {};
+  final Map<String, Consumer> _consumers = {};
   // Map of DataProducers indexed by id.
-  Map<String, DataProducer> _dataProducers = {};
+  final Map<String, DataProducer> _dataProducers = {};
   // Map of DataConsumers indexed by id.
-  Map<String, DataConsumer> _dataConsumers = {};
+  final Map<String, DataConsumer> _dataConsumers = {};
   // Whether the Consumer for RTP probation has been created.
   bool _probatorConsumerCreated = false;
   // AwaitQueue instance to make async tasks happen sequentially.
   // private readonly _awaitQueue = new AwaitQueue({ ClosedErrorClass: InvalidStateError });
   // Observer instance.
   // protected readonly _observer = new EnhancedEventEmitter();
-  var _observer = EnhancedEventEmitter();
+  final _observer = EnhancedEventEmitter();
 
   /**
 	 * @emits connect - (transportLocalParameters: any, callback: Function, errback: Function)

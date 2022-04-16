@@ -1,6 +1,7 @@
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../enhancedeventemitter.dart';
+import '../ortc.dart';
 import '../producer.dart';
 import '../rtpparameters.dart';
 import '../sctpparameters.dart';
@@ -16,9 +17,9 @@ class HandlerRunOptions {
   SctpParameters? sctpParameters; //?: SctpParameters;
   List<dynamic>? iceServers; //?: RTCIceServer[];
   String? iceTransportPolicy; //?: RTCIceTransportPolicy;
-  dynamic additionalSettings; //?: any;
+  Map<String, dynamic>? additionalSettings; //?: any;
   dynamic proprietaryConstraints; //?: any;
-  dynamic extendedRtpCapabilities; //: any;
+  ExtendedRtpCapabilities? extendedRtpCapabilities; //: any;
 
   HandlerRunOptions(
     this.direction,

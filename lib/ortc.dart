@@ -675,8 +675,8 @@ RtpCapabilities getRecvRtpCapabilities(
  * Generate RTP parameters of the given kind for sending media.
  * NOTE: mid, encodings and rtcp fields are left empty.
  */
-RtpParameters getSendingRtpParameters(
-    String kind, extendedRtpCapabilities) //: RtpParameters
+RtpParameters getSendingRtpParameters(String kind,
+    ExtendedRtpCapabilities extendedRtpCapabilities) //: RtpParameters
 {
   var rtpParameters = RtpParameters(
     [],
@@ -693,11 +693,11 @@ RtpParameters getSendingRtpParameters(
   // 	rtcp             : {}
   // );
 
-  for (var extendedCodec in extendedRtpCapabilities.codecs) {
+  for (var extendedCodec in extendedRtpCapabilities.codecs!) {
     if (extendedCodec.kind != kind) continue;
 
     var codec = RtpCodecParameters(extendedCodec.mimeType,
-        extendedCodec.localPayloadType, extendedCodec.clockRate,
+        extendedCodec.localPayloadType!, extendedCodec.clockRate,
         channels: extendedCodec.channels,
         parameters: extendedCodec.localParameters,
         rtcpFeedback: extendedCodec.rtcpFeedback);
@@ -705,9 +705,9 @@ RtpParameters getSendingRtpParameters(
     rtpParameters.codecs.add(codec);
 
     // Add RTX codec.
-    if (extendedCodec.localRtxPayloadType) {
+    if (extendedCodec.localRtxPayloadType != null) {
       var rtxCodec = RtpCodecParameters('${extendedCodec.kind}/rtx',
-          extendedCodec.localRtxPayloadType, extendedCodec.clockRate,
+          extendedCodec.localRtxPayloadType!, extendedCodec.clockRate,
           parameters: {'apt': extendedCodec.localPayloadType},
           rtcpFeedback: []);
 
@@ -715,9 +715,9 @@ RtpParameters getSendingRtpParameters(
     }
   }
 
-  for (var extendedExtension in extendedRtpCapabilities.headerExtensions) {
+  for (var extendedExtension in extendedRtpCapabilities.headerExtensions!) {
     // Ignore RTP extensions of a different kind and those not valid for sending.
-    if ((extendedExtension.kind && extendedExtension.kind != kind) ||
+    if ((extendedExtension.kind != null && extendedExtension.kind != kind) ||
         (extendedExtension.direction != 'sendrecv' &&
             extendedExtension.direction != 'sendonly')) {
       continue;
@@ -747,7 +747,7 @@ RtpParameters getSendingRtpParameters(
  */
 RtpParameters getSendingRemoteRtpParameters(
     String kind, //: MediaKind,
-    extendedRtpCapabilities //: any
+    ExtendedRtpCapabilities extendedRtpCapabilities //: any
     ) //: RtpParameters
 {
   var rtpParameters = RtpParameters(
@@ -766,11 +766,11 @@ RtpParameters getSendingRemoteRtpParameters(
   // 	rtcp             : {}
   // );
 
-  for (var extendedCodec in extendedRtpCapabilities.codecs) {
+  for (var extendedCodec in extendedRtpCapabilities.codecs!) {
     if (extendedCodec.kind != kind) continue;
 
     var codec = RtpCodecParameters(extendedCodec.mimeType,
-        extendedCodec.localPayloadType, extendedCodec.clockRate,
+        extendedCodec.localPayloadType!, extendedCodec.clockRate,
         channels: extendedCodec.channels,
         parameters: extendedCodec.remoteParameters,
         rtcpFeedback: extendedCodec.rtcpFeedback);
@@ -778,10 +778,10 @@ RtpParameters getSendingRemoteRtpParameters(
     rtpParameters.codecs.add(codec);
 
     // Add RTX codec.
-    if (extendedCodec.localRtxPayloadType) {
+    if (extendedCodec.localRtxPayloadType != null) {
       var rtxCodec = RtpCodecParameters(
         '${extendedCodec.kind}/rtx',
-        extendedCodec.localRtxPayloadType,
+        extendedCodec.localRtxPayloadType!,
         extendedCodec.clockRate,
         parameters: {'apt': extendedCodec.localPayloadType},
         rtcpFeedback: [],
@@ -801,9 +801,9 @@ RtpParameters getSendingRemoteRtpParameters(
     }
   }
 
-  for (var extendedExtension in extendedRtpCapabilities.headerExtensions) {
+  for (var extendedExtension in extendedRtpCapabilities.headerExtensions!) {
     // Ignore RTP extensions of a different kind and those not valid for sending.
-    if ((extendedExtension.kind && extendedExtension.kind != kind) ||
+    if ((extendedExtension.kind != null && extendedExtension.kind != kind) ||
         (extendedExtension.direction != 'sendrecv' &&
             extendedExtension.direction != 'sendonly')) {
       continue;

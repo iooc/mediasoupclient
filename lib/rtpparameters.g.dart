@@ -39,7 +39,7 @@ RtpCodecCapability _$RtpCodecCapabilityFromJson(Map<String, dynamic> json) =>
       json['clockRate'] as int,
       preferredPayloadType: json['preferredPayloadType'] as int?,
       channels: json['channels'] as int? ?? 1,
-      parameters: json['parameters'] as Map<dynamic, dynamic>? ?? const {},
+      parameters: json['parameters'] as Map<String, dynamic>? ?? const {},
       rtcpFeedback: (json['rtcpFeedback'] as List<dynamic>?)
               ?.map((e) => RtcpFeedback.fromJson(e as Map<String, dynamic>))
               .toList() ??

@@ -70,7 +70,8 @@ RtpCapabilities extractRtpCapabilities(SdpObject sdpObject //:
 
     // Get codec parameters.
     for (var fmtp in m.fmtp! /*|| []*/) {
-      var parameters = sdpTransform.parseParams(fmtp.config);
+      var parameters =
+          sdpTransform.parseParams(fmtp.config) as Map<String, dynamic>;
       // var codec = codecsMap.get(fmtp.payload);
       var codec = codecsMap[fmtp.payload];
 

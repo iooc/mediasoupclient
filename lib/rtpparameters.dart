@@ -97,7 +97,7 @@ class RtpCodecCapability {
 	 * and 'profile-level-id' in H264 or 'profile-id' in VP9) are critical for
 	 * codec matching.
 	 */
-  Map<dynamic, dynamic>? parameters; //?: any;
+  Map<String, dynamic>? parameters; //?: any;
   // ignore: slash_for_doc_comments
   /**
 	 * Transport layer and codec-specific feedback messages for this codec.
@@ -515,8 +515,8 @@ class ExtendedRtpCodec extends RtpCodecCapability {
   int? localRtxPayloadType;
   int? remotePayloadType;
   int? remoteRtxPayloadType;
-  Map<dynamic, dynamic> localParameters;
-  Map<dynamic, dynamic> remoteParameters;
+  Map<String, dynamic> localParameters;
+  Map<String, dynamic> remoteParameters;
 
   ExtendedRtpCodec({
     required String kind,

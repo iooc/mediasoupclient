@@ -27,7 +27,7 @@ IceCandidate _$IceCandidateFromJson(Map<String, dynamic> json) => IceCandidate(
       json['protocol'] as String,
       json['port'] as int,
       json['type'] as String,
-      json['tcpType'] as String,
+      json['tcpType'] as String?,
     );
 
 Map<String, dynamic> _$IceCandidateToJson(IceCandidate instance) =>

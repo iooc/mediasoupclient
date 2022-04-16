@@ -162,16 +162,16 @@ class Chrome74 extends HandlerInterface {
 
     _sendingRtpParametersByKind = {
       'audio': ortc.getSendingRtpParameters(
-          'audio', options.extendedRtpCapabilities),
-      'video':
-          ortc.getSendingRtpParameters('video', options.extendedRtpCapabilities)
+          'audio', options.extendedRtpCapabilities!),
+      'video': ortc.getSendingRtpParameters(
+          'video', options.extendedRtpCapabilities!)
     };
 
     _sendingRemoteRtpParametersByKind = {
       'audio': ortc.getSendingRemoteRtpParameters(
-          'audio', options.extendedRtpCapabilities),
+          'audio', options.extendedRtpCapabilities!),
       'video': ortc.getSendingRemoteRtpParameters(
-          'video', options.extendedRtpCapabilities)
+          'video', options.extendedRtpCapabilities!)
     };
 
     _pc = await createPeerConnection({
@@ -180,7 +180,7 @@ class Chrome74 extends HandlerInterface {
       'bundlePolicy': 'max-bundle',
       'rtcpMuxPolicy': 'require',
       'sdpSemantics': 'unified-plan',
-      ...options.additionalSettings
+      ...?options.additionalSettings
     }, options.proprietaryConstraints);
 
     // Handle RTCPeerConnection connection status.

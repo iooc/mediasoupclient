@@ -44,7 +44,7 @@ abstract class MediaSection {
         candidateObject.priority = candidate.priority;
         candidateObject.transport = candidate.protocol;
         candidateObject.type = candidate.type;
-        if (candidate.tcpType != null && candidate.tcpType.isNotEmpty) {
+        if (candidate.tcpType != null && candidate.tcpType!.isNotEmpty) {
           candidateObject.tcptype = candidate.tcpType;
         }
 
