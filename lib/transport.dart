@@ -639,10 +639,10 @@ class Transport extends EnhancedEventEmitter {
         ortc.validateRtpParameters(rtpParameters);
 
         // const { id }
-        dynamic args = Object();
-        args.kind = options.track!.kind;
-        args.rtpParameters = rtpParameters;
-        args.appData = options.appData;
+        var args = Map<String, dynamic>();
+        args['kind'] = options.track!.kind;
+        args['rtpParameters'] = rtpParameters;
+        args['appData'] = options.appData;
         dynamic safePromise = await safeEmitAsPromise('produce', [args]
             // {
             // 	kind : track.kind,
