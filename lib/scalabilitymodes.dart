@@ -9,7 +9,7 @@ class ScalabilityMode {
   );
 }
 
-ScalabilityMode parse({String scalabilityMode = ''}) {
+ScalabilityMode parse({String? scalabilityMode = ''}) {
   var match = scalabilityModeRegex.allMatches(scalabilityMode);
 
   if (match != null && match.length != 0) {
