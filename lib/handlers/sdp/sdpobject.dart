@@ -140,7 +140,7 @@ class MediaObject {
 
   /// Always 'actpass'.
   String? setup;
-  String? mid;
+  int? mid;
   int? port;
   RtpHeaderDirection? direction;
   List<Rtp>? rtp;

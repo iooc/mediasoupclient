@@ -125,7 +125,7 @@ MediaObject _$MediaObjectFromJson(Map<String, dynamic> json) => MediaObject(
       endOfCandidates: json['endOfCandidates'] as String?,
       iceOptions: json['iceOptions'] as String?,
       setup: json['setup'] as String?,
-      mid: json['mid'] as String?,
+      mid: json['mid'] as int?,
       port: json['port'] as int?,
       direction:
           $enumDecodeNullable(_$RtpHeaderDirectionEnumMap, json['direction']),

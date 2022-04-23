@@ -38,6 +38,7 @@ class Consumer extends EnhancedEventEmitter {
   RTCRtpReceiver? _rtpReceiver; //?: RTCRtpReceiver;
   // Remote track.
   late MediaStreamTrack _track; //: MediaStreamTrack;
+  late MediaStream _stream;
   // RTP parameters.
   late RtpParameters _rtpParameters; //: RtpParameters;
   // Paused flag.
@@ -58,6 +59,7 @@ class Consumer extends EnhancedEventEmitter {
     String localId,
     String producerId,
     MediaStreamTrack track,
+    MediaStream stream,
     RtpParameters rtpParameters,
     appData, {
     RTCRtpReceiver? rtpReceiver,
@@ -84,6 +86,7 @@ class Consumer extends EnhancedEventEmitter {
     _rtpParameters = rtpParameters;
     _paused = !track.enabled;
     _appData = appData;
+    _stream = stream;
     // this._onTrackEnded = this._onTrackEnded.bind(this);
 
     _handleTrack();
@@ -143,6 +146,10 @@ class Consumer extends EnhancedEventEmitter {
   MediaStreamTrack get track //(): MediaStreamTrack
   {
     return _track;
+  }
+
+  MediaStream get stream {
+    return _stream;
   }
 
   /**

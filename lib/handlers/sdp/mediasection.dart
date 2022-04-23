@@ -442,7 +442,7 @@ class OfferMediaSection extends MediaSection {
             planB: planB) {
     // super({ iceParameters, iceCandidates, dtlsParameters, planB });
 
-    _mediaObject.mid = mid;
+    _mediaObject.mid = int.tryParse(mid!);
     _mediaObject.type = kind;
 
     if (plainRtpParameters == null) {

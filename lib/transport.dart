@@ -741,9 +741,10 @@ class Transport extends EnhancedEventEmitter {
       var localId = result.localId;
       var rtpReceiver = result.rtpReceiver;
       var track = result.track;
+      var stream = result.stream;
 
       var consumer = Consumer(options.id!, localId, options.producerId!, track,
-          options.rtpParameters, options.appData,
+          stream, options.rtpParameters, options.appData,
           rtpReceiver: rtpReceiver);
 
       // this._consumers.set(consumer.id, consumer);

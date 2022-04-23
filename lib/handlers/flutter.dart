@@ -106,6 +106,7 @@ class Chrome74 extends HandlerInterface {
     } catch (error) {}
 
     var sdpObject = sdpTransform.parse(offer.sdp!);
+
     var nativeRtpCapabilities =
         sdpCommonUtils.extractRtpCapabilities(SdpObject.fromJson(sdpObject));
 
