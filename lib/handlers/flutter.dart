@@ -765,15 +765,21 @@ class Chrome74 extends HandlerInterface {
 
     await _pc!.setLocalDescription(answer);
 
-    var transceiver =
-        (await _pc!.getTransceivers()).firstWhere((t) => t.mid == localId);
+    var transceiver = (await _pc!.getTransceivers())
+        .firstWhereOrNull((t) => t.mid == localId);
 
     if (transceiver == null) throw Exception('new RTCRtpTransceiver not found');
 
     // Store in the map.
     _mapMidTransceiver[localId] = transceiver;
 
-    return HandlerReceiveResult(localId, transceiver.receiver.track!,
+    final MediaStream? stream = _pc!
+        .getRemoteStreams()
+        .firstWhereOrNull((e) => e?.id == options.rtpParameters.rtcp!.cname);
+
+    if (stream == null) throw ('Stream not found');
+
+    return HandlerReceiveResult(localId, transceiver.receiver.track!, stream,
         rtpReceiver: transceiver.receiver);
   }
 

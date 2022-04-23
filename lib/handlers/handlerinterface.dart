@@ -75,14 +75,17 @@ class HandlerReceiveOptions {
   );
 }
 
+/// 接收结果处理
 class HandlerReceiveResult {
   String localId; //: string;
   MediaStreamTrack track; //: MediaStreamTrack;
   RTCRtpReceiver? rtpReceiver; //?: RTCRtpReceiver;
+  MediaStream stream;
 
   HandlerReceiveResult(
     this.localId,
-    this.track, {
+    this.track,
+    this.stream, {
     this.rtpReceiver,
   });
 }

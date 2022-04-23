@@ -9,6 +9,7 @@ import '../../rtpparameters.dart';
 import '../../sctpparameters.dart';
 import '../../transport.dart';
 import 'mediasection.dart';
+import '../../utils.dart';
 
 class RemoteSdp {
   // Remote ICE parameters.
@@ -218,7 +219,7 @@ class RemoteSdp {
 
       // Let's try to recycle a closed media section (if any).
       // NOTE: Yes, we can recycle a closed m=audio section with a new m=video.
-      var oldMediaSection = _mediaSections.firstWhere((m) => (m.closed));
+      var oldMediaSection = _mediaSections.firstWhereOrNull((m) => (m.closed));
 
       if (oldMediaSection != null) {
         _replaceMediaSection(mediaSection, reuseMid: oldMediaSection.mid);
