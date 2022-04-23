@@ -130,8 +130,9 @@ class RemoteSdp {
     for (var idx = 0; idx < _mediaSections.length; ++idx) {
       var mediaSection = _mediaSections[idx];
 
-      if (mediaSection.closed)
+      if (mediaSection.closed) {
         return {'idx': idx, 'reuseMid': mediaSection.mid};
+      }
     }
 
     // If no closed media section is found, return next one.

@@ -140,7 +140,7 @@ class MediaObject {
 
   /// Always 'actpass'.
   String? setup;
-  int? mid;
+  String? mid;
   int? port;
   RtpHeaderDirection? direction;
   List<Rtp>? rtp;
@@ -389,12 +389,12 @@ class SsrcGroup {
 @JsonSerializable()
 class Sctpmap {
   final String app;
-  final int sctpmanNumber;
+  final int sctpmapNumber;
   final int maxMessageSize;
 
   Sctpmap({
     required this.app,
-    required this.sctpmanNumber,
+    required this.sctpmapNumber,
     required this.maxMessageSize,
   });
 

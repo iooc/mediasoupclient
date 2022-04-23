@@ -3,6 +3,7 @@ import '../../transport.dart';
 import 'package:sdp_transform/sdp_transform.dart' as sdpTransform;
 
 import 'sdpobject.dart';
+import '../../utils.dart';
 
 RtpCapabilities extractRtpCapabilities(SdpObject sdpObject //:
     //{ sdpObject: any }
@@ -136,19 +137,19 @@ RtpCapabilities extractRtpCapabilities(SdpObject sdpObject //:
   return rtpCapabilities;
 }
 
-DtlsParameters extractDtlsParameters({Map<String, dynamic>? sdpObject} //:
+DtlsParameters extractDtlsParameters({SdpObject? sdpObject} //:
     //{ sdpObject: any }
     ) //: DtlsParameters
 {
-  var mediaObject = (sdpObject!['media'] /*|| []*/).find(
+  var mediaObject = (sdpObject?.media /*|| []*/)?.firstWhereOrNull(
       (m /*: { iceUfrag: string; port: number }*/) =>
-          (m.iceUfrag && m.port != 0));
+          (m.iceUfrag != null && m.iceUfrag!.isNotEmpty && m.port != 0));
 
   if (mediaObject == null) throw Exception('no active media section found');
 
   // var fingerprint = mediaObject.fingerprint || sdpObject.fingerprint;
   var fingerprint = mediaObject.fingerprint;
-  if (mediaObject.fingerprint == null) fingerprint = sdpObject['fingerprint'];
+  if (mediaObject.fingerprint == null) fingerprint = sdpObject!.fingerprint;
   String role; //: DtlsRole | undefined;
 
   switch (mediaObject.setup) {
@@ -164,7 +165,7 @@ DtlsParameters extractDtlsParameters({Map<String, dynamic>? sdpObject} //:
   }
 
   DtlsParameters dtlsParameters =
-      DtlsParameters([DtlsFingerprint(fingerprint.type, fingerprint.hash)]);
+      DtlsParameters([DtlsFingerprint(fingerprint!.type, fingerprint.hash)]);
   // {
   // 	role,
   // 	fingerprints :
@@ -179,14 +180,15 @@ DtlsParameters extractDtlsParameters({Map<String, dynamic>? sdpObject} //:
   return dtlsParameters;
 }
 
-String getCname({offerMediaObject} //:
+String getCname({MediaObject? offerMediaObject} //:
     //{ offerMediaObject: any }
     ) //: string
 {
-  var ssrcCnameLine = (offerMediaObject.ssrcs /*|| []*/)
-      .find((line /*: { attribute: string }*/) => line.attribute == 'cname');
+  var ssrcCnameLine = offerMediaObject!.ssrcs /*|| []*/
+      ?.firstWhereOrNull(
+          (line /*: { attribute: string }*/) => line.attribute == 'cname');
 
-  if (!ssrcCnameLine) return '';
+  if (ssrcCnameLine == null) return '';
 
   return ssrcCnameLine.value;
 }
@@ -196,7 +198,7 @@ String getCname({offerMediaObject} //:
  * given RTP parameters of an offer.
  */
 void applyCodecParameters(
-    {RtpParameters? offerRtpParameters, answerMediaObject} //:
+    {RtpParameters? offerRtpParameters, MediaObject? answerMediaObject} //:
     // {
     // 	offerRtpParameters: RtpParameters;
     // 	answerMediaObject: any;
@@ -209,22 +211,21 @@ void applyCodecParameters(
     // Avoid parsing codec parameters for unhandled codecs.
     if (mimeType != 'audio/opus') continue;
 
-    var rtp = (answerMediaObject.rtp /*|| []*/)
-        .find((r /*: { payload: number }*/) => r.payload == codec.payloadType);
+    var rtp = (answerMediaObject?.rtp /*|| []*/)?.firstWhereOrNull(
+        (r /*: { payload: number }*/) => r.payload == codec.payloadType);
 
-    if (!rtp) continue;
+    if (rtp == null) continue;
 
     // Just in case.
     // answerMediaObject.fmtp = answerMediaObject.fmtp || [];
-    answerMediaObject.fmtp =
-        answerMediaObject.fmtp == null ? [] : answerMediaObject.fmtp;
+    answerMediaObject!.fmtp = answerMediaObject.fmtp ?? [];
 
-    var fmtp = answerMediaObject.fmtp
-        .find((f /*: { payload: number }*/) => f.payload == codec.payloadType);
+    var fmtp = answerMediaObject.fmtp?.firstWhereOrNull(
+        (f /*: { payload: number }*/) => f.payload == codec.payloadType);
 
     if (fmtp == null) {
-      fmtp = {'payload': codec.payloadType, 'config': ''};
-      answerMediaObject.fmtp.add(fmtp);
+      fmtp = Fmtp(payload: codec.payloadType, config: '');
+      answerMediaObject.fmtp!.add(fmtp);
     }
 
     var parameters = sdpTransform.parseParams(fmtp.config);
@@ -246,7 +247,7 @@ void applyCodecParameters(
     var sortParams = parameters.keys.toList();
     sortParams.sort();
     for (var key in sortParams /*Object.keys(parameters)*/) {
-      if (fmtp.config) fmtp.config += ';';
+      if (fmtp.config.isNotEmpty) fmtp.config += ';';
 
       fmtp.config += '$key=${parameters[key]}';
     }

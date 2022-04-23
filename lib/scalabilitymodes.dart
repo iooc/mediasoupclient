@@ -10,9 +10,9 @@ class ScalabilityMode {
 }
 
 ScalabilityMode parse({String? scalabilityMode = ''}) {
-  var match = scalabilityModeRegex.allMatches(scalabilityMode);
+  var match = scalabilityModeRegex.allMatches(scalabilityMode!);
 
-  if (match != null && match.length != 0) {
+  if (match.isNotEmpty) {
     return ScalabilityMode(
       int.parse(match.elementAt(1).group(0)!),
       int.parse(match.elementAt(2).group(0)!),

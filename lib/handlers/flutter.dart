@@ -363,8 +363,8 @@ class Chrome74 extends HandlerInterface {
             streams: [options.stream!],
             sendEncodings: codes));
     var offer = await _pc!.createOffer();
-    var localSdpObject = sdpTransform.parse(offer.sdp!);
-    var offerMediaObject;
+    var localSdpObject = SdpObject.fromJson(sdpTransform.parse(offer.sdp!));
+    MediaObject offerMediaObject;
 
     if (!_transportReady) {
       await _setupTransport(
@@ -386,8 +386,8 @@ class Chrome74 extends HandlerInterface {
           message: 'send() | enabling legacy simulcast for VP9 SVC');
 
       hackVp9Svc = true;
-      localSdpObject = sdpTransform.parse(offer.sdp!);
-      offerMediaObject = localSdpObject['media'][mediaSectionIdx['idx']];
+      localSdpObject = SdpObject.fromJson(sdpTransform.parse(offer.sdp!));
+      offerMediaObject = localSdpObject.media[mediaSectionIdx['idx']];
 
       sdpUnifiedPlanUtils.addLegacySimulcast(
           // {
@@ -397,7 +397,7 @@ class Chrome74 extends HandlerInterface {
           );
 
       offer = RTCSessionDescription(
-          sdpTransform.write(localSdpObject, null), 'offer');
+          sdpTransform.write(localSdpObject.toJson(), null), 'offer');
     }
 
     debugger(
@@ -413,8 +413,9 @@ class Chrome74 extends HandlerInterface {
     sendingRtpParameters.mid = localId;
 
     var localDescription = await _pc!.getLocalDescription();
-    localSdpObject = sdpTransform.parse(localDescription!.sdp!);
-    offerMediaObject = localSdpObject['media'][mediaSectionIdx['idx']];
+    localSdpObject =
+        SdpObject.fromJson(sdpTransform.parse(localDescription!.sdp!));
+    offerMediaObject = localSdpObject.media[mediaSectionIdx['idx']];
 
     // Set RTCP CNAME.
     sendingRtpParameters.rtcp!.cname =
@@ -667,9 +668,9 @@ class Chrome74 extends HandlerInterface {
     // m=application section.
     if (!_hasDataChannelMediaSection) {
       var offer = await _pc!.createOffer();
-      var localSdpObject = sdpTransform.parse(offer.sdp!);
+      var localSdpObject = SdpObject.fromJson(sdpTransform.parse(offer.sdp!));
       var offerMediaObject =
-          localSdpObject['media'].firstWhere((m) => m.type == 'application');
+          localSdpObject.media.firstWhere((m) => m.type == 'application');
 
       if (!_transportReady) {
         await _setupTransport(
@@ -739,9 +740,9 @@ class Chrome74 extends HandlerInterface {
     await _pc!.setRemoteDescription(offer);
 
     var answer = await _pc!.createAnswer();
-    var localSdpObject = sdpTransform.parse(answer.sdp!);
+    var localSdpObject = SdpObject.fromJson(sdpTransform.parse(answer.sdp!));
     var answerMediaObject =
-        localSdpObject['media'].firstWhere((m) => m.mid == localId);
+        localSdpObject.media.firstWhere((m) => m.mid == localId);
 
     // May need to modify codec parameters in the answer based on codec
     // parameters in the offer.
@@ -750,7 +751,7 @@ class Chrome74 extends HandlerInterface {
         answerMediaObject: answerMediaObject);
 
     answer = RTCSessionDescription(
-        sdpTransform.write(localSdpObject, null), 'answer');
+        sdpTransform.write(localSdpObject.toJson(), null), 'answer');
 
     if (!_transportReady) {
       await _setupTransport(
@@ -843,9 +844,10 @@ class Chrome74 extends HandlerInterface {
 
     option.negotiated = true;
     option.id = streamId!;
-    option.ordered = ordered!;
-    (option as dynamic).maxPacketLifeTime = maxPacketLifeTime;
-    option.maxRetransmits = maxRetransmits!;
+    option.ordered = ordered ?? option.ordered;
+    // option.maxPacketLifeTime = maxPacketLifeTime;
+    option.maxRetransmitTime = maxPacketLifeTime ?? option.maxRetransmitTime;
+    option.maxRetransmits = maxRetransmits ?? option.maxRetransmits;
     option.protocol = options.protocol!;
 
     debugger(when: false, message: 'receiveDataChannel() [options:$option]');
@@ -869,7 +871,8 @@ class Chrome74 extends HandlerInterface {
       var answer = await _pc!.createAnswer();
 
       if (!_transportReady) {
-        var localSdpObject = sdpTransform.parse(answer.sdp!);
+        var localSdpObject =
+            SdpObject.fromJson(sdpTransform.parse(answer.sdp!));
 
         await _setupTransport(
             localDtlsRole: 'client', localSdpObject: localSdpObject);
@@ -889,15 +892,15 @@ class Chrome74 extends HandlerInterface {
   }
 
   Future<void> _setupTransport(
-      {String? localDtlsRole, Map<String, dynamic>? localSdpObject} //:
+      {String? localDtlsRole, SdpObject? localSdpObject} //:
       // {
       // 	localDtlsRole: DtlsRole;
       // 	localSdpObject?: any;
       // }
       ) async //: Promise<void>
   {
-    localSdpObject ??=
-        sdpTransform.parse((await _pc!.getLocalDescription())!.sdp!);
+    localSdpObject ??= SdpObject.fromJson(
+        sdpTransform.parse((await _pc!.getLocalDescription())!.sdp!));
 
     // Get our local DTLS parameters.
     var dtlsParameters =

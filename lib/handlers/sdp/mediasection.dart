@@ -3,10 +3,11 @@ import '../../rtpparameters.dart';
 import '../../sctpparameters.dart';
 import '../../transport.dart';
 import '../../utils.dart' as utils;
+import 'sdpobject.dart';
 
 abstract class MediaSection {
   // SDP media object.
-  late Map<String, dynamic> _mediaObject; //: any;
+  late MediaObject _mediaObject; //: any;
   // Whether this is Plan-B SDP.
   late bool _planB; //: boolean;
 
@@ -14,7 +15,7 @@ abstract class MediaSection {
       {IceParameters? iceParameters,
       List<IceCandidate>? iceCandidates,
       DtlsParameters? dtlsParameters,
-      planB = false} //:
+      bool planB = false} //:
       // {
       // 	iceParameters?: IceParameters;
       // 	iceCandidates?: IceCandidate[];
@@ -22,7 +23,7 @@ abstract class MediaSection {
       // 	planB: boolean;
       // }
       ) {
-    _mediaObject = {};
+    _mediaObject = MediaObject();
     _planB = planB;
 
     if (iceParameters != null) {
@@ -30,29 +31,29 @@ abstract class MediaSection {
     }
 
     if (iceCandidates != null) {
-      _mediaObject['candidates'] = [];
+      _mediaObject.candidates = [];
 
       for (var candidate in iceCandidates) {
-        dynamic candidateObject = Object();
+        var candidateObject = IceCandidate.fromJson(candidate.toJson());
 
         // mediasoup does mandates rtcp-mux so candidates component is always
         // RTP (1).
-        candidateObject.component = 1;
-        candidateObject.foundation = candidate.foundation;
-        candidateObject.ip = candidate.ip;
-        candidateObject.port = candidate.port;
-        candidateObject.priority = candidate.priority;
-        candidateObject.transport = candidate.protocol;
-        candidateObject.type = candidate.type;
+        // candidateObject.component = 1;
+        // candidateObject.foundation = candidate.foundation;
+        // candidateObject.ip = candidate.ip;
+        // candidateObject.port = candidate.port;
+        // candidateObject.priority = candidate.priority;
+        // candidateObject.transport = candidate.protocol;
+        // candidateObject.type = candidate.type;
         if (candidate.tcpType != null && candidate.tcpType!.isNotEmpty) {
-          candidateObject.tcptype = candidate.tcpType;
+          candidateObject.tcpType = candidate.tcpType;
         }
 
-        _mediaObject['candidates'].add(candidateObject);
+        _mediaObject.candidates!.add(candidateObject);
       }
 
-      _mediaObject['endOfCandidates'] = 'end-of-candidates';
-      _mediaObject['iceOptions'] = 'renomination';
+      _mediaObject.endOfCandidates = 'end-of-candidates';
+      _mediaObject.iceOptions = 'renomination';
     }
 
     if (dtlsParameters != null) {
@@ -64,34 +65,34 @@ abstract class MediaSection {
 
   String get mid //(): string
   {
-    return _mediaObject['mid'];
+    return _mediaObject.mid.toString();
   }
 
   bool get closed //(): boolean
   {
-    return _mediaObject['port'] == 0;
+    return _mediaObject.port == 0;
   }
 
-  Map<String, dynamic> getObject() //: object
+  MediaObject getObject() //: object
   {
     return _mediaObject;
   }
 
   void setIceParameters(IceParameters iceParameters) //: void
   {
-    _mediaObject['iceUfrag'] = iceParameters.usernameFragment;
-    _mediaObject['icePwd'] = iceParameters.password;
+    _mediaObject.iceUfrag = iceParameters.usernameFragment;
+    _mediaObject.icePwd = iceParameters.password;
   }
 
   void disable() //: void
   {
-    _mediaObject['direction'] = 'inactive';
-    _mediaObject.remove('ext');
-    _mediaObject.remove('ssrcs');
-    _mediaObject.remove('ssrcGroups');
-    _mediaObject.remove('simulcast');
-    _mediaObject.remove('simulcast_03');
-    _mediaObject.remove('rids');
+    _mediaObject.direction = RtpHeaderDirection.inactive; // 'inactive';
+    _mediaObject.ext = null;
+    _mediaObject.ssrcs = null;
+    _mediaObject.ssrcGroups = null;
+    _mediaObject.simulcast = null;
+    _mediaObject.simulcast_03 = null;
+    _mediaObject.rids = null;
     // delete this._mediaObject.ext;
     // delete this._mediaObject.ssrcs;
     // delete this._mediaObject.ssrcGroups;
@@ -102,16 +103,16 @@ abstract class MediaSection {
 
   void close() //: void
   {
-    _mediaObject['direction'] = 'inactive';
+    _mediaObject.direction = RtpHeaderDirection.inactive; // 'inactive';
 
-    _mediaObject['port'] = 0;
-    _mediaObject.remove('ext');
-    _mediaObject.remove('ssrcs');
-    _mediaObject.remove('ssrcGroups');
-    _mediaObject.remove('simulcast');
-    _mediaObject.remove('simulcast_03');
-    _mediaObject.remove('rids');
-    _mediaObject.remove('extmapAllowMixed');
+    _mediaObject.port = 0;
+    _mediaObject.ext = null;
+    _mediaObject.ssrcs = null;
+    _mediaObject.ssrcGroups = null;
+    _mediaObject.simulcast = null;
+    _mediaObject.simulcast_03 = null;
+    _mediaObject.rids = null;
+    _mediaObject.extmapAllowMixed = null;
 
     // delete this._mediaObject.ext;
     // delete this._mediaObject.ssrcs;
@@ -131,7 +132,7 @@ class AnswerMediaSection extends MediaSection {
       SctpParameters? sctpParameters,
       PlainRtpParameters? plainRtpParameters,
       bool planB = false,
-      offerMediaObject,
+      MediaObject? offerMediaObject,
       RtpParameters? offerRtpParameters,
       RtpParameters? answerRtpParameters,
       ProducerCodecOptions? codecOptions,
@@ -157,40 +158,37 @@ class AnswerMediaSection extends MediaSection {
             planB: planB) {
     // super({ iceParameters, iceCandidates, dtlsParameters, planB });
 
-    _mediaObject['mid'] = offerMediaObject.mid.toString();
-    _mediaObject['type'] = offerMediaObject.type;
-    _mediaObject['protocol'] = offerMediaObject.protocol;
+    _mediaObject.mid = offerMediaObject?.mid;
+    _mediaObject.type = offerMediaObject?.type;
+    _mediaObject.protocol = offerMediaObject?.protocol;
 
     if (plainRtpParameters == null) {
-      _mediaObject['connection'] = {'ip': '127.0.0.1', 'version': 4};
-      _mediaObject['port'] = 7;
+      _mediaObject.connection = Connection(ip: '127.0.0.1', version: 4);
+      _mediaObject.port = 7;
     } else {
-      _mediaObject['connection'] = {
-        'ip': plainRtpParameters.ip,
-        'version': plainRtpParameters.ipVersion
-      };
-      _mediaObject['port'] = plainRtpParameters.port;
+      _mediaObject.connection = Connection(
+          ip: plainRtpParameters.ip, version: plainRtpParameters.ipVersion);
+      _mediaObject.port = plainRtpParameters.port;
     }
 
-    switch (offerMediaObject.type) {
+    switch (offerMediaObject?.type) {
       case 'audio':
       case 'video':
         {
-          _mediaObject['direction'] = 'recvonly';
-          _mediaObject['rtp'] = [];
-          _mediaObject['rtcpFb'] = [];
-          _mediaObject['fmtp'] = [];
+          _mediaObject.direction = RtpHeaderDirection.recvonly; // 'recvonly';
+          _mediaObject.rtp = [];
+          _mediaObject.rtcpFb = [];
+          _mediaObject.fmtp = [];
 
           for (var codec in answerRtpParameters!.codecs) {
-            var rtp = {
-              'payload': codec.payloadType,
-              'codec': getCodecName(codec),
-              'rate': codec.clockRate
-            };
+            var rtp = Rtp(
+                payload: codec.payloadType,
+                codec: getCodecName(codec),
+                rate: codec.clockRate);
 
-            if (codec.channels! > 1) rtp['encoding'] = codec.channels!;
+            if (codec.channels! > 1) rtp.encoding = codec.channels!;
 
-            _mediaObject['rtp'].add(rtp);
+            _mediaObject.rtp!.add(rtp);
 
             Map<String, dynamic> codecParameters =
                 utils.clone(codec.parameters, {});
@@ -282,90 +280,87 @@ class AnswerMediaSection extends MediaSection {
               }
             }
 
-            var fmtp = {'payload': codec.payloadType, 'config': ''};
+            var fmtp = Fmtp(payload: codec.payloadType, config: '');
 
             var sortCodec = codecParameters.keys.toList();
             sortCodec.sort();
             for (var key in sortCodec /*Object.keys(codecParameters)*/) {
-              if (fmtp['config'] != null) {
-                fmtp['config'] = fmtp['config'].toString() + ';';
+              if (fmtp.config.isNotEmpty) {
+                fmtp.config += ';';
               }
 
-              fmtp['config'] =
-                  fmtp['config'].toString() + '$key=${codecParameters[key]}';
+              fmtp.config += '$key=${codecParameters[key]}';
             }
 
-            if (fmtp['config'] != null) _mediaObject['fmtp'].add(fmtp);
+            if (fmtp.config.isNotEmpty) _mediaObject.fmtp!.add(fmtp);
 
             for (var fb in codec.rtcpFeedback!) {
-              _mediaObject['rtcpFb'].add({
-                'payload': codec.payloadType,
-                'type': fb.type,
-                'subtype': fb.parameter
-              });
+              _mediaObject.rtcpFb!.add(RtcpFb(
+                  payload: codec.payloadType,
+                  type: fb.type,
+                  subtype: fb.parameter!));
             }
           }
 
-          _mediaObject['payloads'] = answerRtpParameters.codecs
+          _mediaObject.payloads = answerRtpParameters.codecs
               .map((RtpCodecParameters codec) => codec.payloadType)
               .join(' ');
 
-          _mediaObject['ext'] = [];
+          _mediaObject.ext = [];
 
           for (var ext in answerRtpParameters.headerExtensions!) {
             // Don't add a header extension if not present in the offer.
-            var found = (offerMediaObject.ext /*|| []*/).contain(
-                (RtpHeaderExtensionParameters localExt) =>
-                    localExt.uri == ext.uri);
+            var found = (offerMediaObject!.ext /*|| []*/)!
+                .any((localExt) => localExt.uri == ext.uri);
 
             if (!found) continue;
 
-            _mediaObject['ext'].add({'uri': ext.uri, 'value': ext.id});
+            _mediaObject.ext!.add(Ext(uri: ext.uri, value: ext.id));
           }
 
           // Allow both 1 byte and 2 bytes length header extensions.
           if (extmapAllowMixed &&
-              offerMediaObject.extmapAllowMixed == 'extmap-allow-mixed') {
-            _mediaObject['extmapAllowMixed'] = 'extmap-allow-mixed';
+              offerMediaObject!
+                  .extmapAllowMixed! /* == 'extmap-allow-mixed'*/) {
+            _mediaObject.extmapAllowMixed = true; // 'extmap-allow-mixed';
           }
 
           // Simulcast.
-          if (offerMediaObject.simulcast) {
-            _mediaObject['simulcast'] = {
-              'dir1': 'recv',
-              'list1': offerMediaObject.simulcast.list1
-            };
+          if (offerMediaObject!.simulcast != null) {
+            _mediaObject.simulcast = Simulcast(
+              dir1: 'recv',
+              list1: offerMediaObject.simulcast!.list1,
+            );
 
-            _mediaObject['rids'] = [];
+            _mediaObject.rids = [];
 
-            for (var rid in offerMediaObject.rids /*|| []*/) {
+            for (var rid in offerMediaObject.rids! /*|| []*/) {
               if (rid.direction != 'send') continue;
 
-              _mediaObject['rids'].add({'id': rid.id, 'direction': 'recv'});
+              _mediaObject.rids!.add(Rid(id: rid.id, direction: 'recv'));
             }
           }
           // Simulcast (draft version 03).
-          else if (offerMediaObject.simulcast_03) {
+          else if (offerMediaObject.simulcast_03 != null) {
             // eslint-disable-next-line camelcase
-            _mediaObject['simulcast_03'] = {
-              'value':
-                  offerMediaObject.simulcast_03.value.replace('send', 'recv')
-            };
+            _mediaObject.simulcast_03 = Simulcast03(
+                value: offerMediaObject.simulcast_03!.value
+                    .replaceAll('send', 'recv'));
 
-            _mediaObject['rids'] = [];
+            _mediaObject.rids = [];
 
-            for (var rid in offerMediaObject.rids /*|| []*/) {
+            for (var rid in offerMediaObject.rids! /*|| []*/) {
               if (rid.direction != 'send') continue;
 
-              _mediaObject['rids'].add({'id': rid.id, 'direction': 'recv'});
+              _mediaObject.rids!.add(Rid(id: rid.id, direction: 'recv'));
             }
           }
 
-          _mediaObject['rtcpMux'] = 'rtcp-mux';
-          _mediaObject['rtcpRsize'] = 'rtcp-rsize';
+          _mediaObject.rtcpMux = 'rtcp-mux';
+          _mediaObject.rtcpRsize = 'rtcp-rsize';
 
-          if (_planB && _mediaObject['type'] == 'video') {
-            _mediaObject['xGoogleFlag'] = 'conference';
+          if (_planB && _mediaObject.type == 'video') {
+            _mediaObject.xGoogleFlag = 'conference';
           }
 
           break;
@@ -375,19 +370,19 @@ class AnswerMediaSection extends MediaSection {
         {
           // New spec.
           // if (typeof offerMediaObject.sctpPort === 'number')
-          if (offerMediaObject.sctpPort is int) {
-            _mediaObject['payloads'] = 'webrtc-datachannel';
-            _mediaObject['sctpPort'] = sctpParameters!.port;
-            _mediaObject['maxMessageSize'] = sctpParameters.maxMessageSize;
+          if (offerMediaObject!.sctpPort is int) {
+            _mediaObject.payloads = 'webrtc-datachannel';
+            _mediaObject.sctpPort = sctpParameters!.port;
+            _mediaObject.maxMessageSize = sctpParameters.maxMessageSize;
           }
           // Old spec.
           else if (offerMediaObject.sctpmap != null) {
-            _mediaObject['payloads'] = sctpParameters!.port;
-            _mediaObject['sctpmap'] = {
-              'app': 'webrtc-datachannel',
-              'sctpmapNumber': sctpParameters.port,
-              'maxMessageSize': sctpParameters.maxMessageSize
-            };
+            _mediaObject.payloads = sctpParameters!.port.toString();
+            _mediaObject.sctpmap = Sctpmap(
+              app: 'webrtc-datachannel',
+              sctpmapNumber: sctpParameters.port,
+              maxMessageSize: sctpParameters.maxMessageSize,
+            );
           }
 
           break;
@@ -399,13 +394,13 @@ class AnswerMediaSection extends MediaSection {
   {
     switch (role) {
       case 'client':
-        _mediaObject['setup'] = 'active';
+        _mediaObject.setup = 'active';
         break;
       case 'server':
-        _mediaObject['setup'] = 'passive';
+        _mediaObject.setup = 'passive';
         break;
       case 'auto':
-        _mediaObject['setup'] = 'actpass';
+        _mediaObject.setup = 'actpass';
         break;
     }
   }
@@ -447,88 +442,86 @@ class OfferMediaSection extends MediaSection {
             planB: planB) {
     // super({ iceParameters, iceCandidates, dtlsParameters, planB });
 
-    _mediaObject['mid'] = mid;
-    _mediaObject['type'] = kind;
+    _mediaObject.mid = mid;
+    _mediaObject.type = kind;
 
     if (plainRtpParameters == null) {
-      _mediaObject['connection'] = {'ip': '127.0.0.1', 'version': 4};
+      _mediaObject.connection = Connection(ip: '127.0.0.1', version: 4);
 
       if (sctpParameters == null) {
-        _mediaObject['protocol'] = 'UDP/TLS/RTP/SAVPF';
+        _mediaObject.protocol = 'UDP/TLS/RTP/SAVPF';
       } else {
-        _mediaObject['protocol'] = 'UDP/DTLS/SCTP';
+        _mediaObject.protocol = 'UDP/DTLS/SCTP';
       }
 
-      _mediaObject['port'] = 7;
+      _mediaObject.port = 7;
     } else {
-      _mediaObject['connection'] = {
-        'ip': plainRtpParameters.ip,
-        'version': plainRtpParameters.ipVersion
-      };
-      _mediaObject['protocol'] = 'RTP/AVP';
-      _mediaObject['port'] = plainRtpParameters.port;
+      _mediaObject.connection = Connection(
+        ip: plainRtpParameters.ip,
+        version: plainRtpParameters.ipVersion,
+      );
+      _mediaObject.protocol = 'RTP/AVP';
+      _mediaObject.port = plainRtpParameters.port;
     }
 
     switch (kind) {
       case 'audio':
       case 'video':
         {
-          _mediaObject['direction'] = 'sendonly';
-          _mediaObject['rtp'] = [];
-          _mediaObject['rtcpFb'] = [];
-          _mediaObject['fmtp'] = [];
+          _mediaObject.direction = RtpHeaderDirection.sendonly; //'sendonly';
+          _mediaObject.rtp = [];
+          _mediaObject.rtcpFb = [];
+          _mediaObject.fmtp = [];
 
           if (!_planB) {
-            _mediaObject['msid'] = '${streamId ?? '-'} $trackId';
+            _mediaObject.msid = '${streamId ?? '-'} $trackId';
           }
 
           for (var codec in offerRtpParameters!.codecs) {
-            var rtp = {
-              'payload': codec.payloadType,
-              'codec': getCodecName(codec),
-              'rate': codec.clockRate
-            };
+            var rtp = Rtp(
+                payload: codec.payloadType,
+                codec: getCodecName(codec),
+                rate: codec.clockRate);
 
-            if (codec.channels! > 1) rtp['encoding'] = codec.channels!;
+            if (codec.channels! > 1) rtp.encoding = codec.channels!;
 
-            _mediaObject['rtp'].add(rtp);
+            _mediaObject.rtp!.add(rtp);
 
-            var fmtp = {'payload': codec.payloadType, 'config': ''};
+            var fmtp = Fmtp(payload: codec.payloadType, config: '');
 
             var codeKeys = codec.parameters!.keys.toList();
             codeKeys.sort();
             for (var key in codeKeys /*Object.keys(codec.parameters)*/) {
-              if (fmtp['config'] != null) {
-                fmtp['config'] = fmtp['config'].toString() + ';';
+              if (fmtp.config.isNotEmpty) {
+                fmtp.config += ';';
               }
 
-              fmtp['config'] =
-                  fmtp['config'].toString() + '$key=${codec.parameters![key]}';
+              fmtp.config += '$key=${codec.parameters![key]}';
             }
 
-            if (fmtp['config'] != null) _mediaObject['fmtp'].add(fmtp);
+            if (fmtp.config.isNotEmpty) _mediaObject.fmtp!.add(fmtp);
 
             for (var fb in codec.rtcpFeedback!) {
-              _mediaObject['rtcpFb'].add({
-                'payload': codec.payloadType,
-                'type': fb.type,
-                'subtype': fb.parameter
-              });
+              _mediaObject.rtcpFb!.add(RtcpFb(
+                payload: codec.payloadType,
+                type: fb.type,
+                subtype: fb.parameter!,
+              ));
             }
           }
 
-          _mediaObject['payloads'] = offerRtpParameters.codecs
-              .map((RtpCodecParameters codec) => codec.payloadType != 0)
+          _mediaObject.payloads = offerRtpParameters.codecs
+              .map((codec) => codec.payloadType != 0)
               .join(' ');
 
-          _mediaObject['ext'] = [];
+          _mediaObject.ext = [];
 
           for (var ext in offerRtpParameters.headerExtensions!) {
-            _mediaObject['ext'].add({'uri': ext.uri, 'value': ext.id});
+            _mediaObject.ext!.add(Ext(uri: ext.uri, value: ext.id));
           }
 
-          _mediaObject['rtcpMux'] = 'rtcp-mux';
-          _mediaObject['rtcpRsize'] = 'rtcp-rsize';
+          _mediaObject.rtcpMux = 'rtcp-mux';
+          _mediaObject.rtcpRsize = 'rtcp-rsize';
 
           var encoding = offerRtpParameters.encodings![0];
           var ssrc = encoding.ssrc;
@@ -536,47 +529,47 @@ class OfferMediaSection extends MediaSection {
               ? encoding.rtx!['ssrc']
               : null;
 
-          _mediaObject['ssrcs'] = [];
-          _mediaObject['ssrcGroups'] = [];
+          _mediaObject.ssrcs = [];
+          _mediaObject.ssrcGroups = [];
 
           if (offerRtpParameters.rtcp!.cname != null &&
               offerRtpParameters.rtcp!.cname!.isNotEmpty) {
-            _mediaObject['ssrcs'].add({
-              'id': ssrc,
-              'attribute': 'cname',
-              'value': offerRtpParameters.rtcp!.cname
-            });
+            _mediaObject.ssrcs!.add(Ssrc(
+              id: ssrc,
+              attribute: 'cname',
+              value: offerRtpParameters.rtcp!.cname!,
+            ));
           }
 
           if (_planB) {
-            _mediaObject['ssrcs'].add({
-              'id': ssrc,
-              'attribute': 'msid',
-              'value': '${(streamId!.isNotEmpty ? streamId : '-')} $trackId'
-            });
+            _mediaObject.ssrcs!.add(Ssrc(
+              id: ssrc,
+              attribute: 'msid',
+              value: '${(streamId!.isNotEmpty ? streamId : '-')} $trackId',
+            ));
           }
 
           if (rtxSsrc != null) {
             if (offerRtpParameters.rtcp!.cname != null &&
                 offerRtpParameters.rtcp!.cname!.isNotEmpty) {
-              _mediaObject['ssrcs'].add({
-                'id': rtxSsrc,
-                'attribute': 'cname',
-                'value': offerRtpParameters.rtcp!.cname
-              });
+              _mediaObject.ssrcs!.add(Ssrc(
+                id: rtxSsrc,
+                attribute: 'cname',
+                value: offerRtpParameters.rtcp!.cname!,
+              ));
             }
 
             if (_planB) {
-              _mediaObject['ssrcs'].add({
-                'id': rtxSsrc,
-                'attribute': 'msid',
-                'value': '${(streamId!.isNotEmpty ? streamId : '-')} $trackId'
-              });
+              _mediaObject.ssrcs!.add(Ssrc(
+                id: rtxSsrc,
+                attribute: 'msid',
+                value: '${(streamId!.isNotEmpty ? streamId : '-')} $trackId',
+              ));
             }
 
             // Associate original and retransmission SSRCs.
-            _mediaObject['ssrcGroups']
-                .add({'semantics': 'FID', 'ssrcs': '$ssrc $rtxSsrc'});
+            _mediaObject.ssrcGroups!
+                .add(SsrcGroup(semantics: 'FID', ssrcs: '$ssrc $rtxSsrc'));
           }
 
           break;
@@ -586,18 +579,18 @@ class OfferMediaSection extends MediaSection {
         {
           // New spec.
           if (!oldDataChannelSpec) {
-            _mediaObject['payloads'] = 'webrtc-datachannel';
-            _mediaObject['sctpPort'] = sctpParameters!.port;
-            _mediaObject['maxMessageSize'] = sctpParameters.maxMessageSize;
+            _mediaObject.payloads = 'webrtc-datachannel';
+            _mediaObject.sctpPort = sctpParameters!.port;
+            _mediaObject.maxMessageSize = sctpParameters.maxMessageSize;
           }
           // Old spec.
           else {
-            _mediaObject['payloads'] = sctpParameters!.port;
-            _mediaObject['sctpmap'] = {
-              'app': 'webrtc-datachannel',
-              'sctpmapNumber': sctpParameters.port,
-              'maxMessageSize': sctpParameters.maxMessageSize
-            };
+            _mediaObject.payloads = sctpParameters!.port.toString();
+            _mediaObject.sctpmap = Sctpmap(
+              app: 'webrtc-datachannel',
+              sctpmapNumber: sctpParameters.port,
+              maxMessageSize: sctpParameters.maxMessageSize,
+            );
           }
 
           break;
@@ -610,7 +603,7 @@ class OfferMediaSection extends MediaSection {
   void setDtlsRole(String role) //(role: DtlsRole): void
   {
     // Always 'actpass'.
-    _mediaObject['setup'] = 'actpass';
+    _mediaObject.setup = 'actpass';
   }
 
   void planBReceive(
@@ -631,38 +624,37 @@ class OfferMediaSection extends MediaSection {
 
     if (offerRtpParameters.rtcp!.cname != null &&
         offerRtpParameters.rtcp!.cname!.isNotEmpty) {
-      _mediaObject['ssrcs'].add({
-        'id': ssrc,
-        'attribute': 'cname',
-        'value': offerRtpParameters.rtcp!.cname
-      });
+      _mediaObject.ssrcs!.add(Ssrc(
+          id: ssrc,
+          attribute: 'cname',
+          value: offerRtpParameters.rtcp!.cname!));
     }
 
-    _mediaObject['ssrcs'].add({
-      'id': ssrc,
-      'attribute': 'msid',
-      'value': '${streamId.isNotEmpty ? streamId : '-'} $trackId'
-    });
+    _mediaObject.ssrcs!.add(Ssrc(
+      id: ssrc,
+      attribute: 'msid',
+      value: '${streamId.isNotEmpty ? streamId : '-'} $trackId',
+    ));
 
     if (rtxSsrc != null) {
       if (offerRtpParameters.rtcp!.cname != null &&
           offerRtpParameters.rtcp!.cname!.isNotEmpty) {
-        _mediaObject['ssrcs'].add({
-          'id': rtxSsrc,
-          'attribute': 'cname',
-          'value': offerRtpParameters.rtcp!.cname
-        });
+        _mediaObject.ssrcs!.add(Ssrc(
+          id: rtxSsrc,
+          attribute: 'cname',
+          value: offerRtpParameters.rtcp!.cname!,
+        ));
       }
 
-      _mediaObject['ssrcs'].add({
-        'id': rtxSsrc,
-        'attribute': 'msid',
-        'value': '${streamId.isNotEmpty ? streamId : '-'} $trackId'
-      });
+      _mediaObject.ssrcs!.add(Ssrc(
+        id: rtxSsrc,
+        attribute: 'msid',
+        value: '${streamId.isNotEmpty ? streamId : '-'} $trackId',
+      ));
 
       // Associate original and retransmission SSRCs.
-      _mediaObject['ssrcGroups']
-          .add({'semantics': 'FID', 'ssrcs': '$ssrc $rtxSsrc'});
+      _mediaObject.ssrcGroups!
+          .add(SsrcGroup(semantics: 'FID', ssrcs: '$ssrc $rtxSsrc'));
     }
   }
 
@@ -676,12 +668,12 @@ class OfferMediaSection extends MediaSection {
         ? encoding.rtx!['ssrc']
         : null;
 
-    _mediaObject['ssrcs'] = _mediaObject['ssrcs']
+    _mediaObject.ssrcs = _mediaObject.ssrcs!
         .where((s) => s.id != ssrc && s.id != rtxSsrc)
         .toList();
 
     if (rtxSsrc != null) {
-      _mediaObject['ssrcGroups'] = _mediaObject['ssrcGroups']
+      _mediaObject.ssrcGroups = _mediaObject.ssrcGroups!
           .where((group) => group.ssrcs != '$ssrc $rtxSsrc')
           .toList();
     }

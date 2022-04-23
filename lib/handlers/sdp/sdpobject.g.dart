@@ -125,7 +125,7 @@ MediaObject _$MediaObjectFromJson(Map<String, dynamic> json) => MediaObject(
       endOfCandidates: json['endOfCandidates'] as String?,
       iceOptions: json['iceOptions'] as String?,
       setup: json['setup'] as String?,
-      mid: json['mid'] as int?,
+      mid: json['mid'] as String?,
       port: json['port'] as int?,
       direction:
           $enumDecodeNullable(_$RtpHeaderDirectionEnumMap, json['direction']),
@@ -380,13 +380,13 @@ Map<String, dynamic> _$SsrcGroupToJson(SsrcGroup instance) => <String, dynamic>{
 
 Sctpmap _$SctpmapFromJson(Map<String, dynamic> json) => Sctpmap(
       app: json['app'] as String,
-      sctpmanNumber: json['sctpmanNumber'] as int,
+      sctpmapNumber: json['sctpmanNumber'] as int,
       maxMessageSize: json['maxMessageSize'] as int,
     );
 
 Map<String, dynamic> _$SctpmapToJson(Sctpmap instance) => <String, dynamic>{
       'app': instance.app,
-      'sctpmanNumber': instance.sctpmanNumber,
+      'sctpmanNumber': instance.sctpmapNumber,
       'maxMessageSize': instance.maxMessageSize,
     };
 
