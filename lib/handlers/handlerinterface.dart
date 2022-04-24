@@ -18,7 +18,7 @@ class HandlerRunOptions {
   List<dynamic>? iceServers; //?: RTCIceServer[];
   String? iceTransportPolicy; //?: RTCIceTransportPolicy;
   Map<String, dynamic>? additionalSettings; //?: any;
-  dynamic proprietaryConstraints; //?: any;
+  Map<String, dynamic>? proprietaryConstraints; //?: any;
   ExtendedRtpCapabilities? extendedRtpCapabilities; //: any;
 
   HandlerRunOptions(

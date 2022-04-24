@@ -175,14 +175,25 @@ class Chrome74 extends HandlerInterface {
           'video', options.extendedRtpCapabilities!)
     };
 
-    _pc = await createPeerConnection({
-      'iceServers': options.iceServers, // || [],
-      'iceTransportPolicy': options.iceTransportPolicy ?? 'all',
-      'bundlePolicy': 'max-bundle',
-      'rtcpMuxPolicy': 'require',
-      'sdpSemantics': 'unified-plan',
-      ...?options.additionalSettings
-    }, options.proprietaryConstraints);
+    if (options.proprietaryConstraints == null) {
+      _pc = await createPeerConnection({
+        'iceServers': options.iceServers, // || [],
+        'iceTransportPolicy': options.iceTransportPolicy ?? 'all',
+        'bundlePolicy': 'max-bundle',
+        'rtcpMuxPolicy': 'require',
+        'sdpSemantics': 'unified-plan',
+        ...?options.additionalSettings
+      });
+    } else {
+      _pc = await createPeerConnection({
+        'iceServers': options.iceServers, // || [],
+        'iceTransportPolicy': options.iceTransportPolicy ?? 'all',
+        'bundlePolicy': 'max-bundle',
+        'rtcpMuxPolicy': 'require',
+        'sdpSemantics': 'unified-plan',
+        ...?options.additionalSettings
+      }, options.proprietaryConstraints!);
+    }
 
     // Handle RTCPeerConnection connection status.
     // this._pc.addEventListener('iceconnectionstatechange', () {
