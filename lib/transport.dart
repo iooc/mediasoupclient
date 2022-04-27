@@ -563,11 +563,9 @@ class Transport extends EnhancedEventEmitter {
       throw UnsupportedError('not a sending Transport');
     } else if (!_canProduceByKind.keys![options.track!.kind]!) {
       throw UnsupportedError('cannot produce ${options.track!.kind}');
-    }
-    // else
-    dynamic mtrack = options.track;
-    if (mtrack.readyState == 'ended') {
-      throw Exception('track ended');
+      // }
+      //  else if (options.track.readyState == 'ended') {
+      //   throw Exception('track ended');
     } else if (listenerCount('connect') == 0 && _connectionState == 'new') {
       throw Exception('no "connect" listener set into this transport');
     } else if (listenerCount('produce') == 0) {
@@ -589,8 +587,8 @@ class Transport extends EnhancedEventEmitter {
         // normalizedEncodings = undefined;
         normalizedEncodings = null;
       } else if (options.encodings != null) {
-        normalizedEncodings = options.encodings!.map((dynamic encoding) {
-          const dynamic normalizedEncoding = Object();
+        normalizedEncodings = options.encodings!.map((encoding) {
+          var normalizedEncoding = RtpEncodingParameters();
           normalizedEncoding.active = true;
 
           if (encoding.active == false) normalizedEncoding.active = false;

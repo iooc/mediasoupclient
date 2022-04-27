@@ -402,6 +402,7 @@ class RtpEncodingParameters {
   bool? adaptivePtime; //?: boolean;
   String? priority; //?: 'very-low' | 'low' | 'medium' | 'high';
   String? networkPriority; //?: 'very-low' | 'low' | 'medium' | 'high';
+  bool? active;
 
   RtpEncodingParameters({
     this.ssrc,
@@ -416,6 +417,7 @@ class RtpEncodingParameters {
     this.adaptivePtime,
     this.priority,
     this.networkPriority,
+    this.active = true,
   });
 
   factory RtpEncodingParameters.fromJson(Map<String, dynamic> json) =>
