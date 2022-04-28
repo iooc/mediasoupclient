@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import 'awaitqueue/awaitqueue.dart';
 import 'consumer.dart';
 import 'dataconsumer.dart';
 import 'dataproducer.dart';
@@ -263,7 +264,7 @@ class Transport extends EnhancedEventEmitter {
   // Transport connection state.
   String _connectionState = 'new'; //: ConnectionState = 'new';
   // App custom data.
-  dynamic _appData; //: any;
+  Map<String, dynamic>? _appData; //: any;
   // Map of Producers indexed by id.
   final Map<String, Producer> _producers =
       {}; //: Map<string, Producer> = new Map();
@@ -276,7 +277,7 @@ class Transport extends EnhancedEventEmitter {
   // Whether the Consumer for RTP probation has been created.
   bool _probatorConsumerCreated = false;
   // AwaitQueue instance to make async tasks happen sequentially.
-  // private readonly _awaitQueue = new AwaitQueue({ ClosedErrorClass: InvalidStateError });
+  final _awaitQueue = AwaitQueue(/*{ ClosedErrorClass: InvalidStateError }*/);
   // Observer instance.
   // protected readonly _observer = new EnhancedEventEmitter();
   final _observer = EnhancedEventEmitter();
@@ -449,7 +450,7 @@ class Transport extends EnhancedEventEmitter {
     _closed = true;
 
     // Close the AwaitQueue.
-    // this._awaitQueue.close();
+    _awaitQueue.close();
 
     // Close the handler.
     _handler.close();
@@ -513,10 +514,9 @@ class Transport extends EnhancedEventEmitter {
     }
 
     // Enqueue command.
-    // return this._awaitQueue.push(
-    // 	async () => this._handler.restartIce(iceParameters),
-    // 	'transport.restartIce()');
-    return Future(() async => _handler.restartIce(iceParameters!));
+    return _awaitQueue.push(() async => _handler.restartIce(iceParameters!),
+        'transport.restartIce()');
+    // return Future(() async => _handler.restartIce(iceParameters!));
   }
 
   /**
@@ -533,10 +533,9 @@ class Transport extends EnhancedEventEmitter {
     // 	throw new Exception('missing iceServers');
 
     // Enqueue command.
-    // return this._awaitQueue.push(
-    // 	async () => this._handler.updateIceServers(iceServers),
-    // 	'transport.updateIceServers()');
-    return Future(() async => _handler.updateIceServers(iceServers!));
+    return _awaitQueue.push(() async => _handler.updateIceServers(iceServers!),
+        'transport.updateIceServers()');
+    // return Future(() async => _handler.updateIceServers(iceServers!));
   }
 
   /**
@@ -575,7 +574,7 @@ class Transport extends EnhancedEventEmitter {
     // 	throw new Exception('if given, appData must be an object');
 
     // Enqueue command.
-    return Future(() async {
+    return this._awaitQueue.push(() async {
       dynamic normalizedEncodings;
 
       // if (options.encodings && !Array.isArray(encodings))
@@ -674,8 +673,7 @@ class Transport extends EnhancedEventEmitter {
 
         throw error;
       }
-    }) //,
-        // 'transport.produce()')
+    }, 'transport.produce()')
         // This catch is needed to stop the given track if the command above
         // failed due to closed Transport.
         .catchError((error) {
@@ -721,7 +719,7 @@ class Transport extends EnhancedEventEmitter {
     // 	throw new Exception('if given, appData must be an object');
 
     // Enqueue command.
-    return Future(() async {
+    return _awaitQueue.push(() async {
       // Ensure the device can consume it.
       var canConsume =
           ortc.canReceive(options.rtpParameters, _extendedRtpCapabilities);
@@ -776,8 +774,7 @@ class Transport extends EnhancedEventEmitter {
       _observer.safeEmit('newconsumer', [consumer]);
 
       return consumer;
-    }); //,
-    // 'transport.consume()');
+    }, 'transport.consume()');
   }
 
   /**
@@ -817,7 +814,7 @@ class Transport extends EnhancedEventEmitter {
     }
 
     // Enqueue command.
-    return Future(() async {
+    return _awaitQueue.push(() async {
       // const {
       // 	dataChannel,
       // 	sctpStreamParameters
@@ -865,9 +862,7 @@ class Transport extends EnhancedEventEmitter {
       _observer.safeEmit('newdataproducer', [dataProducer]);
 
       return dataProducer;
-    } //,
-        // 'transport.produceData()'
-        );
+    }, 'transport.produceData()');
   }
 
   /**
@@ -907,7 +902,7 @@ class Transport extends EnhancedEventEmitter {
     ortc.validateSctpStreamParameters(options.sctpStreamParameters);
 
     // Enqueue command.
-    return Future(() async {
+    return _awaitQueue.push(() async {
       // const {
       // 	dataChannel
       // }
@@ -926,9 +921,7 @@ class Transport extends EnhancedEventEmitter {
       _observer.safeEmit('newdataconsumer', [dataConsumer]);
 
       return dataConsumer;
-    } //,
-        // 'transport.consumeData()'
-        );
+    }, 'transport.consumeData()');
   }
 
   void _handleHandler() //: void
@@ -970,30 +963,40 @@ class Transport extends EnhancedEventEmitter {
 
       if (_closed) return;
 
-      Future(() async => _handler.stopSending(producer.localId) //,
-              // 'producer @close event'
-              )
+      _awaitQueue
+          .push(() async => _handler.stopSending(producer.localId),
+              'producer @close event')
           .catchError((error) =>
               debugger(when: false, message: 'producer.close() failed:$error'));
     });
 
     producer.on('@replacetrack', (track, callback, errback) {
-      Future(
-          () async => _handler.replaceTrack(producer.localId, track: track) //,
-          // 'producer @replacetrack event'
-          ).then(callback).catchError(errback);
+      _awaitQueue
+          .push(
+              () async => _handler.replaceTrack(producer.localId, track: track),
+              'producer @replacetrack event')
+          .then(callback)
+          .catchError(errback);
     });
 
     producer.on('@setmaxspatiallayer', (spatialLayer, callback, errback) {
-      Future(() async => (_handler.setMaxSpatialLayer(producer.localId,
-              spatialLayer)) //, 'producer @setmaxspatiallayer event'
-          ).then(callback).catchError(errback);
+      _awaitQueue
+          .push(
+              () async =>
+                  (_handler.setMaxSpatialLayer(producer.localId, spatialLayer)),
+              'producer @setmaxspatiallayer event')
+          .then(callback)
+          .catchError(errback);
     });
 
     producer.on('@setrtpencodingparameters', (params, callback, errback) {
-      Future(() async => (_handler.setRtpEncodingParameters(producer.localId,
-              params)) //, 'producer @setrtpencodingparameters event'
-          ).then(callback).catchError(errback);
+      _awaitQueue
+          .push(
+              () async =>
+                  (_handler.setRtpEncodingParameters(producer.localId, params)),
+              'producer @setrtpencodingparameters event')
+          .then(callback)
+          .catchError(errback);
     });
 
     producer.on('@getstats', (callback, errback) {
@@ -1013,9 +1016,10 @@ class Transport extends EnhancedEventEmitter {
 
       if (_closed) return;
 
-      Future(() async => _handler.stopReceiving(consumer.localId) //,
-          // 'consumer @close event'
-          ).catchError((_) => {});
+      _awaitQueue
+          .push(() async => _handler.stopReceiving(consumer.localId),
+              'consumer @close event')
+          .catchError((_) => {});
     });
 
     consumer.on('@getstats', (callback, errback) {

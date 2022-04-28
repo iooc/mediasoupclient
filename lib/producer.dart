@@ -58,31 +58,31 @@ class ProducerCodecOptions {
 /// 多媒体生产者
 class Producer extends EnhancedEventEmitter {
   // Id.
-  late String _id; //: string;
+  final String _id; //: string;
   // Local id.
-  late String _localId; //: string;
+  final String _localId; //: string;
   // Closed flag.
   bool _closed = false;
   // Associated RTCRtpSender.
-  RTCRtpSender? _rtpSender; //?: RTCRtpSender;
+  final RTCRtpSender? _rtpSender; //?: RTCRtpSender;
   // Local track.
   MediaStreamTrack? _track; //: MediaStreamTrack | null;
   // Producer kind.
   late String _kind; //: MediaKind;
   // RTP parameters.
-  late RtpParameters _rtpParameters; //: RtpParameters;
+  final RtpParameters _rtpParameters; //: RtpParameters;
   // Paused flag.
   late bool _paused; //: boolean;
   // Video max spatial layer.
   int? _maxSpatialLayer; //: number | undefined;
   // Whether the Producer should call stop() in given tracks.
-  bool _stopTracks; //: boolean;
+  final bool _stopTracks; //: boolean;
   // Whether the Producer should set track.enabled = false when paused.
-  bool _disableTrackOnPause; //: boolean;
+  final bool _disableTrackOnPause; //: boolean;
   // Whether we should replace the RTCRtpSender.track with null when paused.
-  bool _zeroRtpOnPause; //: boolean;
+  final bool _zeroRtpOnPause; //: boolean;
   // App custom data.
-  dynamic _appData; //: any;
+  final Map<String, dynamic>? _appData; //: any;
   // Observer instance.
   var _observer = EnhancedEventEmitter();
 
