@@ -572,7 +572,7 @@ class Transport extends EnhancedEventEmitter {
     }
     // else if (options.appData /*&& typeof appData !== 'object'*/)
     // 	throw new Exception('if given, appData must be an object');
-
+    print('这儿来了么？');
     // Enqueue command.
     return this._awaitQueue.push(() async {
       dynamic normalizedEncodings;
@@ -640,6 +640,7 @@ class Transport extends EnhancedEventEmitter {
         args['kind'] = options.track!.kind;
         args['rtpParameters'] = rtpParameters;
         args['appData'] = options.appData;
+        print('生产数据了吗？');
         dynamic safePromise = await safeEmitAsPromise('produce', [args]
             // {
             // 	kind : track.kind,
