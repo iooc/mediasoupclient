@@ -24,7 +24,7 @@ class ConsumerOptions {
 }
 
 // const logger = new Logger('Consumer');
-/// 多媒体消费者
+/// 多媒体消费者（接收后处理）
 class Consumer extends EnhancedEventEmitter {
   // Id.
   late String _id; //: string;
