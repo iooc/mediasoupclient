@@ -390,8 +390,10 @@ class Device {
       // Check whether we can produce audio/video.
       _canProduceByKind.audio =
           ortc.canSend('audio', _extendedRtpCapabilities!);
+      _canProduceByKind.keys!['audio'] = _canProduceByKind.audio;
       _canProduceByKind.video =
           ortc.canSend('video', _extendedRtpCapabilities!);
+      _canProduceByKind.keys!['video'] = _canProduceByKind.video;
 
       // Generate our receiving RTP capabilities for receiving media.
       _recvRtpCapabilities =

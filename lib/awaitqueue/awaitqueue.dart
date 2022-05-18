@@ -170,7 +170,12 @@ class AwaitQueue {
   Future next() async //: Promise<any>
   {
     // Take the first pending task.
-    var pendingTask = pendingTasks[0];
+    PendingTask pendingTask;
+    try {
+      pendingTask = pendingTasks[0];
+    } catch (error) {
+      return;
+    }
 
     // if (!pendingTask)
     // 	return;
