@@ -271,7 +271,7 @@ const _$RtpHeaderDirectionEnumMap = {
 
 Group _$GroupFromJson(Map<String, dynamic> json) => Group(
       type: json['type'] as String,
-      mids: json['mids'] as String,
+      mids: json['mids'].toString(),
     );
 
 Map<String, dynamic> _$GroupToJson(Group instance) => <String, dynamic>{

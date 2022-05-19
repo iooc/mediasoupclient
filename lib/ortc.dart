@@ -10,11 +10,9 @@ const RTP_PROBATOR_MID = 'probator';
 const RTP_PROBATOR_SSRC = 1234;
 const RTP_PROBATOR_CODEC_PAYLOAD_TYPE = 127;
 
-/**
- * Validates RtpCapabilities. It may modify given data by adding missing
- * fields with default values.
- * It throws if invalid.
- */
+/// Validates RtpCapabilities. It may modify given data by adding missing
+/// fields with default values.
+/// It throws if invalid.
 void validateRtpCapabilities(RtpCapabilities caps) //: void
 {
   // if (typeof caps !== 'object')
@@ -41,11 +39,9 @@ void validateRtpCapabilities(RtpCapabilities caps) //: void
   }
 }
 
-/**
- * Validates RtpCodecCapability. It may modify given data by adding missing
- * fields with default values.
- * It throws if invalid.
- */
+/// Validates RtpCodecCapability. It may modify given data by adding missing
+/// fields with default values.
+/// It throws if invalid.
 void validateRtpCodecCapability(RtpCodecCapability codec) //: void
 {
   var MimeTypeRegex = RegExp('^(audio|video)/(.+)' /*, 'i'*/);
@@ -116,11 +112,9 @@ void validateRtpCodecCapability(RtpCodecCapability codec) //: void
   }
 }
 
-/**
- * Validates RtcpFeedback. It may modify given data by adding missing
- * fields with default values.
- * It throws if invalid.
- */
+/// Validates RtcpFeedback. It may modify given data by adding missing
+/// fields with default values.
+/// It throws if invalid.
 void validateRtcpFeedback(RtcpFeedback fb) //: void
 {
   // if (typeof fb !== 'object')
@@ -134,11 +128,9 @@ void validateRtcpFeedback(RtcpFeedback fb) //: void
   fb.parameter ??= '';
 }
 
-/**
- * Validates RtpHeaderExtension. It may modify given data by adding missing
- * fields with default values.
- * It throws if invalid.
- */
+/// Validates RtpHeaderExtension. It may modify given data by adding missing
+/// fields with default values.
+/// It throws if invalid.
 void validateRtpHeaderExtension(RtpHeaderExtension ext) //: void
 {
   // if (typeof ext !== 'object')
@@ -174,11 +166,9 @@ void validateRtpHeaderExtension(RtpHeaderExtension ext) //: void
   ext.direction ??= 'sendrecv';
 }
 
-/**
- * Validates RtpParameters. It may modify given data by adding missing
- * fields with default values.
- * It throws if invalid.
- */
+/// Validates RtpParameters. It may modify given data by adding missing
+/// fields with default values.
+/// It throws if invalid.
 void validateRtpParameters(RtpParameters params) //: void
 {
   // if (typeof params !== 'object')
@@ -225,11 +215,9 @@ void validateRtpParameters(RtpParameters params) //: void
   validateRtcpParameters(params.rtcp!);
 }
 
-/**
- * Validates RtpCodecParameters. It may modify given data by adding missing
- * fields with default values.
- * It throws if invalid.
- */
+/// Validates RtpCodecParameters. It may modify given data by adding missing
+/// fields with default values.
+/// It throws if invalid.
 void validateRtpCodecParameters(RtpCodecParameters codec) //: void
 {
   var mimeTypeRegex = RegExp('^(audio|video)/(.+)' /*, 'i'*/);
@@ -298,11 +286,9 @@ void validateRtpCodecParameters(RtpCodecParameters codec) //: void
   }
 }
 
-/**
- * Validates RtpHeaderExtensionParameteters. It may modify given data by adding missing
- * fields with default values.
- * It throws if invalid.
- */
+/// Validates RtpHeaderExtensionParameteters. It may modify given data by adding missing
+/// fields with default values.
+/// It throws if invalid.
 void validateRtpHeaderExtensionParameters(
     RtpHeaderExtensionParameters ext) //: void
 {
@@ -341,11 +327,9 @@ void validateRtpHeaderExtensionParameters(
   }
 }
 
-/**
- * Validates RtpEncodingParameters. It may modify given data by adding missing
- * fields with default values.
- * It throws if invalid.
- */
+/// Validates RtpEncodingParameters. It may modify given data by adding missing
+/// fields with default values.
+/// It throws if invalid.
 void validateRtpEncodingParameters(RtpEncodingParameters encoding) //: void
 {
   // if (typeof encoding !== 'object')
@@ -380,11 +364,9 @@ void validateRtpEncodingParameters(RtpEncodingParameters encoding) //: void
   // 	throw new TypeError('invalid encoding.scalabilityMode');
 }
 
-/**
- * Validates RtcpParameters. It may modify given data by adding missing
- * fields with default values.
- * It throws if invalid.
- */
+/// Validates RtcpParameters. It may modify given data by adding missing
+/// fields with default values.
+/// It throws if invalid.
 void validateRtcpParameters(RtcpParameters rtcp) //: void
 {
   // if (typeof rtcp !== 'object')
@@ -401,11 +383,9 @@ void validateRtcpParameters(RtcpParameters rtcp) //: void
   }
 }
 
-/**
- * Validates SctpCapabilities. It may modify given data by adding missing
- * fields with default values.
- * It throws if invalid.
- */
+/// Validates SctpCapabilities. It may modify given data by adding missing
+/// fields with default values.
+/// It throws if invalid.
 void validateSctpCapabilities(SctpCapabilities caps) //: void
 {
   // if (typeof caps !== 'object')
@@ -419,11 +399,9 @@ void validateSctpCapabilities(SctpCapabilities caps) //: void
   validateNumSctpStreams(caps.numStreams!);
 }
 
-/**
- * Validates NumSctpStreams. It may modify given data by adding missing
- * fields with default values.
- * It throws if invalid.
- */
+/// Validates NumSctpStreams. It may modify given data by adding missing
+/// fields with default values.
+/// It throws if invalid.
 void validateNumSctpStreams(NumSctpStreams numStreams) //: void
 {
   // if (typeof numStreams !== 'object')
@@ -438,11 +416,9 @@ void validateNumSctpStreams(NumSctpStreams numStreams) //: void
   // 	throw new TypeError('missing numStreams.MIS');
 }
 
-/**
- * Validates SctpParameters. It may modify given data by adding missing
- * fields with default values.
- * It throws if invalid.
- */
+/// Validates SctpParameters. It may modify given data by adding missing
+/// fields with default values.
+/// It throws if invalid.
 void validateSctpParameters(SctpParameters params) //: void
 {
   // if (typeof params !== 'object')
@@ -465,11 +441,9 @@ void validateSctpParameters(SctpParameters params) //: void
   // 	throw new TypeError('missing params.maxMessageSize');
 }
 
-/**
- * Validates SctpStreamParameters. It may modify given data by adding missing
- * fields with default values.
- * It throws if invalid.
- */
+/// Validates SctpStreamParameters. It may modify given data by adding missing
+/// fields with default values.
+/// It throws if invalid.
 void validateSctpStreamParameters(SctpStreamParameters params) //: void
 {
   // if (typeof params !== 'object')
@@ -524,9 +498,7 @@ void validateSctpStreamParameters(SctpStreamParameters params) //: void
   // 	throw new TypeError('invalid params.protocol');
 }
 
-/**
- * Generate extended RTP capabilities for sending and receiving.
- */
+/// Generate extended RTP capabilities for sending and receiving.
 ExtendedRtpCapabilities getExtendedRtpCapabilities(
     RtpCapabilities localCaps, RtpCapabilities remoteCaps) //: any
 {
@@ -620,10 +592,8 @@ ExtendedRtpCapabilities getExtendedRtpCapabilities(
   return extendedRtpCapabilities;
 }
 
-/**
- * Generate RTP capabilities for receiving media based on the given extended
- * RTP capabilities.
- */
+/// Generate RTP capabilities for receiving media based on the given extended
+/// RTP capabilities.
 RtpCapabilities getRecvRtpCapabilities(
     extendedRtpCapabilities) //: RtpCapabilities
 {
@@ -671,10 +641,8 @@ RtpCapabilities getRecvRtpCapabilities(
   return rtpCapabilities;
 }
 
-/**
- * Generate RTP parameters of the given kind for sending media.
- * NOTE: mid, encodings and rtcp fields are left empty.
- */
+/// Generate RTP parameters of the given kind for sending media.
+/// NOTE: mid, encodings and rtcp fields are left empty.
 RtpParameters getSendingRtpParameters(String kind,
     ExtendedRtpCapabilities extendedRtpCapabilities) //: RtpParameters
 {
@@ -742,9 +710,7 @@ RtpParameters getSendingRtpParameters(String kind,
   return rtpParameters;
 }
 
-/**
- * Generate RTP parameters of the given kind suitable for the remote SDP answer.
- */
+/// Generate RTP parameters of the given kind suitable for the remote SDP answer.
 RtpParameters getSendingRemoteRtpParameters(
     String kind, //: MediaKind,
     ExtendedRtpCapabilities extendedRtpCapabilities //: any
@@ -843,19 +809,17 @@ RtpParameters getSendingRemoteRtpParameters(
   return rtpParameters;
 }
 
-/**
- * Reduce given codecs by returning an array of codecs "compatible" with the
- * given capability codec. If no capability codec is given, take the first
- * one(s).
- *
- * Given codecs must be generated by ortc.getSendingRtpParameters() or
- * ortc.getSendingRemoteRtpParameters().
- *
- * The returned array of codecs also include a RTX codec if available.
- */
+/// Reduce given codecs by returning an array of codecs "compatible" with the
+/// given capability codec. If no capability codec is given, take the first
+/// one(s).
+///
+/// Given codecs must be generated by ortc.getSendingRtpParameters() or
+/// ortc.getSendingRemoteRtpParameters().
+///
+/// The returned array of codecs also include a RTX codec if available.
 List<RtpCodecParameters> reduceCodecs(
     List<RtpCodecParameters> codecs, //: RtpCodecParameters[],
-    RtpCodecCapability capCodec //?: RtpCodecCapability
+    RtpCodecCapability? capCodec //?: RtpCodecCapability
     ) //: RtpCodecParameters[]
 {
   List<RtpCodecParameters> filteredCodecs = [];
@@ -864,7 +828,7 @@ List<RtpCodecParameters> reduceCodecs(
   if (capCodec == null) {
     filteredCodecs.add(codecs[0]);
 
-    if (isRtxCodec(codecs[1] as RtpCodecCapability)) {
+    if (isRtxCodec(codecs[1])) {
       filteredCodecs.add(codecs[1]);
     }
   }
@@ -874,7 +838,7 @@ List<RtpCodecParameters> reduceCodecs(
       if (matchCodecs(codecs[idx], capCodec)) {
         filteredCodecs.add(codecs[idx]);
 
-        if (isRtxCodec(codecs[idx + 1] as RtpCodecCapability)) {
+        if (isRtxCodec(codecs[idx + 1])) {
           filteredCodecs.add(codecs[idx + 1]);
         }
 
@@ -882,7 +846,7 @@ List<RtpCodecParameters> reduceCodecs(
       }
     }
 
-    if (filteredCodecs.length == 0) {
+    if (filteredCodecs.isEmpty) {
       throw Exception('no matching codec found');
     }
   }
@@ -890,9 +854,7 @@ List<RtpCodecParameters> reduceCodecs(
   return filteredCodecs;
 }
 
-/**
- * Create RTP parameters for a Consumer for the RTP probator.
- */
+/// Create RTP parameters for a Consumer for the RTP probator.
 RtpParameters generateProbatorRtpParameters(
     RtpParameters videoRtpParameters //: RtpParameters
     ) //: RtpParameters
@@ -919,19 +881,15 @@ RtpParameters generateProbatorRtpParameters(
   return rtpParameters;
 }
 
-/**
- * Whether media can be sent based on the given RTP capabilities.
- */
+/// Whether media can be sent based on the given RTP capabilities.
 bool canSend(
     String kind, ExtendedRtpCapabilities extendedRtpCapabilities) //: boolean
 {
   return extendedRtpCapabilities.codecs!.any((codec) => codec.kind == kind);
 }
 
-/**
- * Whether the given RTP parameters can be received with the given RTP
- * capabilities.
- */
+/// Whether the given RTP parameters can be received with the given RTP
+/// capabilities.
 bool canReceive(
     RtpParameters rtpParameters, //: RtpParameters,
     extendedRtpCapabilities //: any
@@ -940,7 +898,7 @@ bool canReceive(
   // This may throw.
   validateRtpParameters(rtpParameters);
 
-  if (rtpParameters.codecs.length == 0) return false;
+  if (rtpParameters.codecs.isEmpty) return false;
 
   var firstMediaCodec = rtpParameters.codecs[0];
 
@@ -949,8 +907,7 @@ bool canReceive(
 }
 
 bool isRtxCodec(
-    RtpCodecCapability
-        codec /*?: RtpCodecCapability | RtpCodecParameters*/) //: boolean
+    dynamic codec /*?: RtpCodecCapability | RtpCodecParameters*/) //: boolean
 {
   if (codec == null) return false;
 

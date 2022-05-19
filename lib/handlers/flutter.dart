@@ -343,7 +343,7 @@ class Chrome74 extends HandlerInterface {
 
     // This may throw.
     sendingRtpParameters.codecs =
-        ortc.reduceCodecs(sendingRtpParameters.codecs, options.codec!);
+        ortc.reduceCodecs(sendingRtpParameters.codecs, options.codec);
 
     // RtpParameters sendingRemoteRtpParameters =
     //     utils.clone(_sendingRemoteRtpParametersByKind![options.track.kind], {});
@@ -352,21 +352,23 @@ class Chrome74 extends HandlerInterface {
 
     // This may throw.
     sendingRemoteRtpParameters.codecs =
-        ortc.reduceCodecs(sendingRemoteRtpParameters.codecs, options.codec!);
+        ortc.reduceCodecs(sendingRemoteRtpParameters.codecs, options.codec);
 
     var mediaSectionIdx = _remoteSdp!.getNextMediaSectionIdx();
 
     List<RTCRtpEncoding> codes = [];
-    for (var element in options.encodings!) {
-      var code = RTCRtpEncoding(
-        rid: element.rid,
-        maxBitrate: element.maxBitrate,
-        maxFramerate: element.maxFramerate,
-        minBitrate: element.maxBitrate,
-        scaleResolutionDownBy: element.scaleResolutionDownBy,
-        ssrc: element.ssrc,
-      );
-      codes.add(code);
+    if (options.encodings != null) {
+      for (var element in options.encodings!) {
+        var code = RTCRtpEncoding(
+          rid: element.rid,
+          maxBitrate: element.maxBitrate,
+          maxFramerate: element.maxFramerate,
+          minBitrate: element.maxBitrate,
+          scaleResolutionDownBy: element.scaleResolutionDownBy,
+          ssrc: element.ssrc,
+        );
+        codes.add(code);
+      }
     }
     var transceiver = await _pc!.addTransceiver(
         track: options.track,

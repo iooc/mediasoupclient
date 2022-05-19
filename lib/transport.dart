@@ -574,7 +574,7 @@ class Transport extends EnhancedEventEmitter {
     // 	throw new Exception('if given, appData must be an object');
     print('这儿来了么？');
     // Enqueue command.
-    return this._awaitQueue.push(() async {
+    return _awaitQueue.push(() async {
       dynamic normalizedEncodings;
 
       // if (options.encodings && !Array.isArray(encodings))
@@ -619,6 +619,7 @@ class Transport extends EnhancedEventEmitter {
         });
       }
 
+      print('生产数据了吗？');
       var result = await _handler.send(HandlerSendOptions(
         options.track!,
         encodings: normalizedEncodings,
@@ -636,11 +637,10 @@ class Transport extends EnhancedEventEmitter {
         ortc.validateRtpParameters(rtpParameters);
 
         // const { id }
-        var args = Map<String, dynamic>();
+        var args = <String, dynamic>{};
         args['kind'] = options.track!.kind;
         args['rtpParameters'] = rtpParameters;
         args['appData'] = options.appData;
-        print('生产数据了吗？');
         dynamic safePromise = await safeEmitAsPromise('produce', [args]
             // {
             // 	kind : track.kind,
