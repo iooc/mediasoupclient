@@ -294,9 +294,9 @@ class DataConsumer extends EnhancedEventEmitter {
     // 	this.safeEmit('message', event.data);
     // });
     //
-    this._dataChannel.onMessage = (event) {
-      if (this._closed) return;
-      this.safeEmit('event', [event]);
+    _dataChannel.onMessage = (event) {
+      if (_closed) return;
+      safeEmit('event', {'event': event});
     };
   }
 }

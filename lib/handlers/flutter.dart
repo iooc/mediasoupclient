@@ -933,9 +933,7 @@ class Chrome74 extends HandlerInterface {
     _remoteSdp!.updateDtlsRole(localDtlsRole == 'client' ? 'server' : 'client');
 
     // Need to tell the remote transport about our parameters.
-    await safeEmitAsPromise('@connect', [
-      {dtlsParameters}
-    ]);
+    await safeEmitAsPromise('@connect', {'dtlsParameters': dtlsParameters});
 
     _transportReady = true;
   }

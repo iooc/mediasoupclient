@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_webrtc: ^0.8.3
+  events2: ^1.0.0
   json_annotation: ^4.4.0
   sdp_transform: ^0.3.2
 

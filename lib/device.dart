@@ -642,7 +642,7 @@ class Device {
     // });
 
     // Emit observer event.
-    _observer.safeEmit('newtransport', [transport]);
+    _observer.safeEmit('newtransport', {'transport': transport});
 
     return transport;
   }

@@ -197,20 +197,20 @@ class AwaitQueue {
 
     pendingTask.executedAt = DateTime.now();
 
-    try {
-      var result = await pendingTask.task();
+    // try {
+    var result = await pendingTask.task();
 
-      // If the task is stopped, ignore it.
-      if (pendingTask.stopped) return;
+    // If the task is stopped, ignore it.
+    if (pendingTask.stopped) return;
 
-      // Resolve the task with the returned result (if any).
-      pendingTask.finished.complete(result);
-    } catch (error) {
-      // If the task is stopped, ignore it.
-      if (pendingTask.stopped) return;
+    // Resolve the task with the returned result (if any).
+    pendingTask.finished.complete(result);
+    // } catch (error) {
+    //   // If the task is stopped, ignore it.
+    //   if (pendingTask.stopped) return;
 
-      // Reject the task with its own error.
-      pendingTask.finished.completeError(error);
-    }
+    //   // Reject the task with its own error.
+    //   pendingTask.finished.completeError(error);
+    // }
   }
 }

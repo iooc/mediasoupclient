@@ -354,7 +354,8 @@ class Producer extends EnhancedEventEmitter {
     }
 
     if (_zeroRtpOnPause) {
-      safeEmitAsPromise('@replacetrack', [_track]).catchError((_) => {});
+      safeEmitAsPromise('@replacetrack', {'track': _track})
+          .catchError((_) => {});
     }
 
     // Emit observer event.
@@ -392,7 +393,7 @@ class Producer extends EnhancedEventEmitter {
     }
 
     if (!_zeroRtpOnPause || !_paused) {
-      await safeEmitAsPromise('@replacetrack', [track]);
+      await safeEmitAsPromise('@replacetrack', {'track': track});
     }
 
     // Destroy the previous track.
@@ -430,7 +431,8 @@ class Producer extends EnhancedEventEmitter {
 
     if (spatialLayer == _maxSpatialLayer) return;
 
-    await safeEmitAsPromise('@setmaxspatiallayer', [spatialLayer]);
+    await safeEmitAsPromise(
+        '@setmaxspatiallayer', {'spatialLayer': spatialLayer});
 
     _maxSpatialLayer = spatialLayer;
   }

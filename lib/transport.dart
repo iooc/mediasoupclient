@@ -565,9 +565,9 @@ class Transport extends EnhancedEventEmitter {
       // }
       //  else if (options.track.readyState == 'ended') {
       //   throw Exception('track ended');
-    } else if (listenerCount('connect') == 0 && _connectionState == 'new') {
+    } else if (listeners('connect').isEmpty && _connectionState == 'new') {
       throw Exception('no "connect" listener set into this transport');
-    } else if (listenerCount('produce') == 0) {
+    } else if (listeners('produce').isEmpty) {
       throw Exception('no "produce" listener set into this transport');
     }
     // else if (options.appData /*&& typeof appData !== 'object'*/)
@@ -641,7 +641,7 @@ class Transport extends EnhancedEventEmitter {
         args['kind'] = options.track!.kind;
         args['rtpParameters'] = rtpParameters;
         args['appData'] = options.appData;
-        dynamic safePromise = await safeEmitAsPromise('produce', [args]
+        dynamic safePromise = await safeEmitAsPromise('produce', args
             // {
             // 	kind : track.kind,
             // 	rtpParameters,
@@ -666,7 +666,7 @@ class Transport extends EnhancedEventEmitter {
         _handleProducer(producer);
 
         // Emit observer event.
-        _observer.safeEmit('newproducer', [producer]);
+        _observer.safeEmit('newproducer', {'producer': producer});
 
         return producer;
       } catch (error) {
@@ -713,7 +713,7 @@ class Transport extends EnhancedEventEmitter {
       throw UnsupportedError('not a receiving Transport');
     } else if (options.kind != 'audio' && options.kind != 'video') {
       throw Exception('invalid kind ${options.kind}');
-    } else if (listenerCount('connect') == 0 && _connectionState == 'new') {
+    } else if (listeners('connect').isEmpty && _connectionState == 'new') {
       throw Exception('no "connect" listener set into this transport');
     }
     // else if (appData /*&& typeof appData !== 'object'*/)
@@ -772,7 +772,7 @@ class Transport extends EnhancedEventEmitter {
       }
 
       // Emit observer event.
-      _observer.safeEmit('newconsumer', [consumer]);
+      _observer.safeEmit('newconsumer', {'consumer': consumer});
 
       return consumer;
     }, 'transport.consume()');
@@ -802,9 +802,9 @@ class Transport extends EnhancedEventEmitter {
     } else if (!['very-low', 'low', 'medium', 'high']
         .contains(options.priority)) {
       throw Exception('wrong priority');
-    } else if (listenerCount('connect') == 0 && _connectionState == 'new') {
+    } else if (listeners('connect').isEmpty && _connectionState == 'new') {
       throw Exception('no "connect" listener set into this transport');
-    } else if (listenerCount('producedata') == 0) {
+    } else if (listeners('producedata').isEmpty) {
       throw Exception('no "producedata" listener set into this transport');
     }
     // else if (appData && typeof appData !== 'object')
@@ -844,12 +844,12 @@ class Transport extends EnhancedEventEmitter {
       ortc.validateSctpStreamParameters(sctpStreamParameters);
 
       // const { id }
-      dynamic p1 = Object();
-      p1.sctpStreamParameters = sctpStreamParameters;
-      p1.label = options.label;
-      p1.protocol = options.protocol;
-      p1.appData = options.appData;
-      var ident = await safeEmitAsPromise('producedata', [p1]);
+      var p1 = <String, dynamic>{};
+      p1['sctpStreamParameters'] = sctpStreamParameters;
+      p1['label'] = options.label;
+      p1['protocol'] = options.protocol;
+      p1['appData'] = options.appData;
+      var ident = await safeEmitAsPromise('producedata', p1);
       var id = ident.id;
 
       var dataProducer =
@@ -860,7 +860,7 @@ class Transport extends EnhancedEventEmitter {
       _handleDataProducer(dataProducer);
 
       // Emit observer event.
-      _observer.safeEmit('newdataproducer', [dataProducer]);
+      _observer.safeEmit('newdataproducer', {'dataProducer': dataProducer});
 
       return dataProducer;
     }, 'transport.produceData()');
@@ -893,7 +893,7 @@ class Transport extends EnhancedEventEmitter {
       throw UnsupportedError('not a receiving Transport');
     } else if (_maxSctpMessageSize == null || _maxSctpMessageSize == 0) {
       throw UnsupportedError('SCTP not enabled by remote Transport');
-    } else if (listenerCount('connect') == 0 && _connectionState == 'new') {
+    } else if (listeners('connect').isEmpty && _connectionState == 'new') {
       throw Exception('no "connect" listener set into this transport');
     }
     // else if (appData && typeof appData !== 'object')
@@ -919,7 +919,7 @@ class Transport extends EnhancedEventEmitter {
       _handleDataConsumer(dataConsumer);
 
       // Emit observer event.
-      _observer.safeEmit('newdataconsumer', [dataConsumer]);
+      _observer.safeEmit('newdataconsumer', {'dataConsumer': dataConsumer});
 
       return dataConsumer;
     }, 'transport.consumeData()');
@@ -940,7 +940,8 @@ class Transport extends EnhancedEventEmitter {
         return;
       }
 
-      safeEmit('connect', [params, callback, errback]);
+      safeEmit('connect',
+          {'params': params, 'callback': callback, 'errback': errback});
     }
 
     handler.on('@connect', fun);
@@ -953,7 +954,9 @@ class Transport extends EnhancedEventEmitter {
 
       _connectionState = connectionState;
 
-      if (!_closed) safeEmit('connectionstatechange', [connectionState]);
+      if (!_closed) {
+        safeEmit('connectionstatechange', {'connectionState': connectionState});
+      }
     });
   }
 
