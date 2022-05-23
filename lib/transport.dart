@@ -641,14 +641,14 @@ class Transport extends EnhancedEventEmitter {
         args['kind'] = options.track!.kind;
         args['rtpParameters'] = rtpParameters;
         args['appData'] = options.appData;
-        dynamic safePromise = await safeEmitAsPromise('produce', args
+        var id = await safeEmitAsPromise('produce', args
             // {
             // 	kind : track.kind,
             // 	rtpParameters,
             // 	appData
             // }
             );
-        var id = safePromise.id;
+        // var id = safePromise.id;
 
         var producer = Producer(
             id,
@@ -849,8 +849,8 @@ class Transport extends EnhancedEventEmitter {
       p1['label'] = options.label;
       p1['protocol'] = options.protocol;
       p1['appData'] = options.appData;
-      var ident = await safeEmitAsPromise('producedata', p1);
-      var id = ident.id;
+      var id = await safeEmitAsPromise('producedata', p1);
+      // var id = ident.id;
 
       var dataProducer =
           DataProducer(id, dataChannel, sctpStreamParameters, options.appData);
@@ -930,23 +930,27 @@ class Transport extends EnhancedEventEmitter {
     var handler = _handler;
 
     void fun(
-        params, //{ DtlsParameters dtlsParameters },//: { dtlsParameters: DtlsParameters },
-        Function callback, //: Function,
-        Function errback //: Function
-        ) {
+      args, //{ DtlsParameters dtlsParameters },//: { dtlsParameters: DtlsParameters },
+      // Function callback, //: Function,
+      // Function errback //: Function
+    ) {
+      // var params = args['params'];
+      // Function callback = args['callback'];
+      Function errback = args['errback'];
       if (_closed) {
         errback(Exception('closed'));
 
         return;
       }
 
-      safeEmit('connect',
-          {'params': params, 'callback': callback, 'errback': errback});
+      safeEmit('connect', args);
+      // {'params': params, 'callback': callback, 'errback': errback});
     }
 
     handler.on('@connect', fun);
 
-    handler.on('@connectionstatechange', (String connectionState) {
+    handler.on('@connectionstatechange', (Map args) {
+      String connectionState = args['connectionState'];
       if (connectionState == _connectionState) return;
 
       debugger(
@@ -974,7 +978,10 @@ class Transport extends EnhancedEventEmitter {
               debugger(when: false, message: 'producer.close() failed:$error'));
     });
 
-    producer.on('@replacetrack', (track, callback, errback) {
+    producer.on('@replacetrack', (args) {
+      MediaStreamTrack track = args['track'];
+      void Function(dynamic) callback = args['callback'];
+      Function errback = args['errback'];
       _awaitQueue
           .push(
               () async => _handler.replaceTrack(producer.localId, track: track),
@@ -983,7 +990,10 @@ class Transport extends EnhancedEventEmitter {
           .catchError(errback);
     });
 
-    producer.on('@setmaxspatiallayer', (spatialLayer, callback, errback) {
+    producer.on('@setmaxspatiallayer', (args) {
+      int spatialLayer = args['spatialLayer'];
+      void Function(dynamic) callback = args['callback'];
+      Function errback = args['errback'];
       _awaitQueue
           .push(
               () async =>
@@ -993,7 +1003,10 @@ class Transport extends EnhancedEventEmitter {
           .catchError(errback);
     });
 
-    producer.on('@setrtpencodingparameters', (params, callback, errback) {
+    producer.on('@setrtpencodingparameters', (args) {
+      var params = args['params'];
+      void Function(dynamic) callback = args['callback'];
+      Function errback = args['errback'];
       _awaitQueue
           .push(
               () async =>
@@ -1003,7 +1016,9 @@ class Transport extends EnhancedEventEmitter {
           .catchError(errback);
     });
 
-    producer.on('@getstats', (callback, errback) {
+    producer.on('@getstats', (args) {
+      void Function(dynamic) callback = args['callback'];
+      Function errback = args['errback'];
       if (_closed) return errback(Exception('closed'));
 
       _handler
@@ -1026,7 +1041,9 @@ class Transport extends EnhancedEventEmitter {
           .catchError((_) => {});
     });
 
-    consumer.on('@getstats', (callback, errback) {
+    consumer.on('@getstats', (args) {
+      void Function(dynamic) callback = args['callback'];
+      Function errback = args['errback'];
       if (_closed) return errback(Exception('closed'));
 
       _handler

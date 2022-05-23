@@ -41,11 +41,12 @@ class EnhancedEventEmitter extends EventEmitter {
       // this.emit(event, args, resolve, reject);
       var completer = Completer<dynamic>();
       var _args = {
+        'params': args,
         'callback': completer.complete,
         'errback': completer.completeError,
-        ...?args,
+        // ...?args,
       };
-      emit(event, _args);
+      emitAsFuture(event, _args);
       return completer.future;
     } catch (error) {
       debugger(
