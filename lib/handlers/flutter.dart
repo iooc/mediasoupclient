@@ -222,23 +222,23 @@ class Chrome74 extends HandlerInterface {
     _pc!.onIceConnectionState = (state) {
       switch (state) {
         case RTCIceConnectionState.RTCIceConnectionStateChecking: //'checking':
-          emit('@connectionstatechange', ['connecting']);
+          emit('@connectionstatechange', {'connectionState': 'connecting'});
           break;
         case RTCIceConnectionState
             .RTCIceConnectionStateConnected: //'connected':
         case RTCIceConnectionState
             .RTCIceConnectionStateCompleted: //'completed':
-          emit('@connectionstatechange', ['connected']);
+          emit('@connectionstatechange', {'connectionState': 'connected'});
           break;
         case RTCIceConnectionState.RTCIceConnectionStateFailed: //'failed':
-          emit('@connectionstatechange', ['failed']);
+          emit('@connectionstatechange', {'connectionState': 'failed'});
           break;
         case RTCIceConnectionState
             .RTCIceConnectionStateDisconnected: //'disconnected':
-          emit('@connectionstatechange', ['disconnected']);
+          emit('@connectionstatechange', {'connectionState': 'disconnected'});
           break;
         case RTCIceConnectionState.RTCIceConnectionStateClosed: //'closed':
-          emit('@connectionstatechange', ['closed']);
+          emit('@connectionstatechange', {'connectionState': 'closed'});
           break;
       }
     };
@@ -935,6 +935,7 @@ class Chrome74 extends HandlerInterface {
     // Need to tell the remote transport about our parameters.
     await safeEmitAsPromise('@connect', {'dtlsParameters': dtlsParameters});
 
+    print('来否');
     _transportReady = true;
   }
 

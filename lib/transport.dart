@@ -619,7 +619,6 @@ class Transport extends EnhancedEventEmitter {
         });
       }
 
-      print('生产数据了吗？');
       var result = await _handler.send(HandlerSendOptions(
         options.track!,
         encodings: normalizedEncodings,
@@ -627,6 +626,7 @@ class Transport extends EnhancedEventEmitter {
         codec: options.codec,
         stream: options.stream,
       ));
+      print('生产数据了吗？');
 // const { localId, rtpParameters, rtpSender }
       var localId = result.localId;
       var rtpParameters = result.rtpParameters;
@@ -942,14 +942,14 @@ class Transport extends EnhancedEventEmitter {
 
         return;
       }
-
+      print('这儿？');
       safeEmit('connect', args);
       // {'params': params, 'callback': callback, 'errback': errback});
     }
 
     handler.on('@connect', fun);
 
-    handler.on('@connectionstatechange', (Map args) {
+    handler.on('@connectionstatechange', (args) {
       String connectionState = args['connectionState'];
       if (connectionState == _connectionState) return;
 
@@ -959,7 +959,7 @@ class Transport extends EnhancedEventEmitter {
       _connectionState = connectionState;
 
       if (!_closed) {
-        safeEmit('connectionstatechange', {'connectionState': connectionState});
+        safeEmit('connectionstatechange', args);
       }
     });
   }
