@@ -240,6 +240,8 @@ class Chrome74 extends HandlerInterface {
         case RTCIceConnectionState.RTCIceConnectionStateClosed: //'closed':
           emit('@connectionstatechange', {'connectionState': 'closed'});
           break;
+        default:
+          break;
       }
     };
   }
@@ -389,7 +391,7 @@ class Chrome74 extends HandlerInterface {
     var hackVp9Svc = false;
 
     var layers = scalabilityMode.parse(
-        scalabilityMode: options.encodings![0].scalabilityMode!);
+        scalabilityMode: options.encodings?[0].scalabilityMode!);
 
     if (options.encodings != null &&
         options.encodings!.length == 1 &&
@@ -437,14 +439,13 @@ class Chrome74 extends HandlerInterface {
 
     // Set RTP encodings by parsing the SDP offer if no encodings are given.
     if (options.encodings == null) {
-      sendingRtpParameters.encodings = sdpUnifiedPlanUtils.getRtpEncodings(
-          offerMediaObject: offerMediaObject);
+      sendingRtpParameters.encodings =
+          sdpUnifiedPlanUtils.getRtpEncodings(offerMediaObject);
     }
     // Set RTP encodings by parsing the SDP offer and complete them with given
     // one if just a single encoding has been given.
     else if (options.encodings!.length == 1) {
-      var newEncodings = sdpUnifiedPlanUtils.getRtpEncodings(
-          offerMediaObject: offerMediaObject);
+      var newEncodings = sdpUnifiedPlanUtils.getRtpEncodings(offerMediaObject);
 
       // Object.assign(newEncodings[0], encodings[0]);
       newEncodings[0] = options.encodings![0];

@@ -10,6 +10,7 @@ import '../../sctpparameters.dart';
 import '../../transport.dart';
 import 'mediasection.dart';
 import '../../utils.dart';
+import 'sdpobject.dart';
 
 class RemoteSdp {
   // Remote ICE parameters.
@@ -31,7 +32,7 @@ class RemoteSdp {
   // First MID.
   String? _firstMid; //?: string;
   // SDP object.
-  late Map<String, dynamic> _sdpObject; //: any;
+  late SdpObject _sdpObject; //: any;
 
   RemoteSdp(
       {IceParameters? iceParameters,
@@ -55,7 +56,7 @@ class RemoteSdp {
     _sctpParameters = sctpParameters;
     _plainRtpParameters = plainRtpParameters;
     _planB = planB;
-    _sdpObject = {
+    _sdpObject = SdpObject.fromJson({
       'version': 0,
       'origin': {
         'address': '0.0.0.0',
@@ -68,34 +69,35 @@ class RemoteSdp {
       'name': '-',
       'timing': {'start': 0, 'stop': 0},
       'media': []
-    };
+    });
 
     // If ICE parameters are given, add ICE-Lite indicator.
     if (iceParameters != null && iceParameters.iceLite!) {
-      _sdpObject['icelite'] = 'ice-lite';
+      _sdpObject.icelite = 'ice-lite';
     }
 
     // If DTLS parameters are given, assume WebRTC and BUNDLE.
     if (dtlsParameters != null) {
-      _sdpObject['msidSemantic'] = {'semantic': 'WMS', 'token': '*'};
+      _sdpObject.msidSemantic =
+          MsidSemantic.fromJson({'semantic': 'WMS', 'token': '*'});
 
       // NOTE: We take the latest fingerprint.
       var numFingerprints = _dtlsParameters!.fingerprints.length;
 
-      _sdpObject['fingerprint'] = {
+      _sdpObject.fingerprint = Fingerprint.fromJson({
         'type': dtlsParameters.fingerprints[numFingerprints - 1].algorithm,
         'hash': dtlsParameters.fingerprints[numFingerprints - 1].value
-      };
+      });
 
-      _sdpObject['groups'] = [
-        {'type': 'BUNDLE', 'mids': ''}
+      _sdpObject.groups = [
+        Group.fromJson({'type': 'BUNDLE', 'mids': ''})
       ];
     }
 
     // If there are plain RPT parameters, override SDP origin.
     if (plainRtpParameters != null) {
-      _sdpObject['origin']['address'] = plainRtpParameters.ip;
-      _sdpObject['origin']['ipVer'] = plainRtpParameters.ipVersion;
+      _sdpObject.origin.address = plainRtpParameters.ip;
+      _sdpObject.origin.ipVer = plainRtpParameters.ipVersion;
     }
   }
 
@@ -106,7 +108,9 @@ class RemoteSdp {
         message: 'updateIceParameters() [iceParameters:$iceParameters]');
 
     _iceParameters = iceParameters;
-    _sdpObject['icelite'] = iceParameters.iceLite! ? 'ice-lite' : null;
+    _sdpObject.icelite = iceParameters.iceLite != null && iceParameters.iceLite!
+        ? 'ice-lite'
+        : null;
 
     for (var mediaSection in _mediaSections) {
       mediaSection.setIceParameters(iceParameters);
@@ -141,7 +145,7 @@ class RemoteSdp {
   }
 
   void send(
-      {offerMediaObject,
+      {MediaObject? offerMediaObject,
       String? reuseMid,
       RtpParameters? offerRtpParameters,
       RtpParameters? answerRtpParameters,
@@ -333,14 +337,16 @@ class RemoteSdp {
   String getSdp() //: string
   {
     // Increase SDP version.
-    _sdpObject['origin']['sessionVersion']++;
+    _sdpObject.origin.sessionVersion++;
 
-    return sdpTransform.write(_sdpObject, null);
+    return sdpTransform.write(_sdpObject.toJson(), null);
   }
 
   void _addMediaSection(MediaSection newMediaSection) //: void
   {
-    if (_firstMid!.isEmpty) _firstMid = newMediaSection.mid;
+    if (_firstMid == null || _firstMid!.isEmpty) {
+      _firstMid = newMediaSection.mid;
+    }
 
     // Add to the vector.
     _mediaSections.add(newMediaSection);
@@ -349,7 +355,7 @@ class RemoteSdp {
     _midToIndex[newMediaSection.mid] = _mediaSections.length - 1;
 
     // Add to the SDP object.
-    _sdpObject['media'].addAll(newMediaSection.getObject());
+    _sdpObject.media.add(newMediaSection.getObject());
 
     // Regenerate BUNDLE mids.
     _regenerateBundleMids();
@@ -376,7 +382,7 @@ class RemoteSdp {
       _midToIndex[newMediaSection.mid] = idx;
 
       // Update the SDP object.
-      _sdpObject['media'][idx] = newMediaSection.getObject();
+      _sdpObject.media[idx] = newMediaSection.getObject();
 
       // Regenerate BUNDLE mids.
       _regenerateBundleMids();
@@ -392,7 +398,7 @@ class RemoteSdp {
       _mediaSections[idx] = newMediaSection;
 
       // Update the SDP object.
-      _sdpObject['media'][idx] = newMediaSection.getObject();
+      _sdpObject.media[idx] = newMediaSection.getObject();
     }
   }
 
@@ -400,7 +406,7 @@ class RemoteSdp {
   {
     if (_dtlsParameters == null) return;
 
-    _sdpObject['groups'][0].mids = _mediaSections
+    _sdpObject.groups[0].mids = _mediaSections
         .where((MediaSection mediaSection) => !mediaSection.closed)
         .map((MediaSection mediaSection) => mediaSection.mid)
         .join(' ');

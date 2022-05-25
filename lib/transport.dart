@@ -936,13 +936,13 @@ class Transport extends EnhancedEventEmitter {
     ) {
       // var params = args['params'];
       // Function callback = args['callback'];
-      Function errback = args['errback'];
+      var errback = args['errback'];
       if (_closed) {
         errback(Exception('closed'));
 
         return;
       }
-      print('这儿？');
+
       safeEmit('connect', args);
       // {'params': params, 'callback': callback, 'errback': errback});
     }

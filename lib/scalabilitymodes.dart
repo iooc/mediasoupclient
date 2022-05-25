@@ -10,7 +10,13 @@ class ScalabilityMode {
 }
 
 ScalabilityMode parse({String? scalabilityMode = ''}) {
-  var match = scalabilityModeRegex.allMatches(scalabilityMode!);
+  if (scalabilityMode == null || scalabilityMode.isEmpty) {
+    return ScalabilityMode(
+      1,
+      1,
+    );
+  }
+  var match = scalabilityModeRegex.allMatches(scalabilityMode);
 
   if (match.isNotEmpty) {
     return ScalabilityMode(

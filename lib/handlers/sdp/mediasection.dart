@@ -186,7 +186,9 @@ class AnswerMediaSection extends MediaSection {
                 codec: getCodecName(codec),
                 rate: codec.clockRate);
 
-            if (codec.channels! > 1) rtp.encoding = codec.channels!;
+            if (codec.channels != null && codec.channels! > 1) {
+              rtp.encoding = codec.channels;
+            }
 
             _mediaObject.rtp!.add(rtp);
 
@@ -680,12 +682,11 @@ class OfferMediaSection extends MediaSection {
   }
 }
 
-String getCodecName(RtpCodecParameters codec) //: string
-{
+String getCodecName(RtpCodecParameters codec) {
   var mimeTypeRegex = RegExp('^(audio|video)/(.+)' /*, 'i'*/);
   var mimeTypeMatch = mimeTypeRegex.allMatches(codec.mimeType);
 
   if (mimeTypeMatch == null) throw Exception('invalid codec.mimeType');
 
-  return mimeTypeMatch.toList()[2].group(0)!;
+  return mimeTypeMatch.elementAt(0).group(2)!;
 }

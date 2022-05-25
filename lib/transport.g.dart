@@ -21,7 +21,7 @@ Map<String, dynamic> _$IceParametersToJson(IceParameters instance) =>
     };
 
 IceCandidate _$IceCandidateFromJson(Map<String, dynamic> json) => IceCandidate(
-      json['foundation'] as String,
+      json['foundation'].toString(),
       json['priority'] as int,
       json['ip'] as String,
       json['protocol'] as String,
