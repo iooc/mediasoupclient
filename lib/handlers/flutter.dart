@@ -10,11 +10,11 @@ import 'handlerinterface.dart';
 import 'sdp/RemoteSdp.dart';
 import '../utils.dart' as utils;
 import '../ortc.dart' as ortc;
-import 'package:sdp_transform/sdp_transform.dart' as sdpTransform;
-import 'sdp/commonutils.dart' as sdpCommonUtils;
+import 'package:sdp_transform/sdp_transform.dart' as sdp_transform;
+import 'sdp/commonutils.dart' as sdp_common_utils;
 import 'sdp/sdpobject.dart';
-import 'sdp/unifiedplanutils.dart' as sdpUnifiedPlanUtils;
-import '../scalabilitymodes.dart' as scalabilityMode;
+import 'sdp/unifiedplanutils.dart' as sdp_unified_plan_utils;
+import '../scalabilitymodes.dart' as scalability_mode;
 
 var SCTP_NUM_STREAMS = NumSctpStreams(1024, 1024);
 
@@ -105,10 +105,10 @@ class Chrome74 extends HandlerInterface {
       pc.close();
     } catch (error) {}
 
-    var sdpObject = sdpTransform.parse(offer.sdp!);
+    var sdpObject = sdp_transform.parse(offer.sdp!);
 
     var nativeRtpCapabilities =
-        sdpCommonUtils.extractRtpCapabilities(SdpObject.fromJson(sdpObject));
+        sdp_common_utils.extractRtpCapabilities(SdpObject.fromJson(sdpObject));
 
     return nativeRtpCapabilities;
     // } catch (error) {
@@ -379,7 +379,7 @@ class Chrome74 extends HandlerInterface {
             streams: [options.stream!],
             sendEncodings: codes));
     var offer = await _pc!.createOffer();
-    var localSdpObject = SdpObject.fromJson(sdpTransform.parse(offer.sdp!));
+    var localSdpObject = SdpObject.fromJson(sdp_transform.parse(offer.sdp!));
     MediaObject offerMediaObject;
 
     if (!_transportReady) {
@@ -390,7 +390,7 @@ class Chrome74 extends HandlerInterface {
     // Special case for VP9 with SVC.
     var hackVp9Svc = false;
 
-    var layers = scalabilityMode.parse(
+    var layers = scalability_mode.parse(
         scalabilityMode: options.encodings?[0].scalabilityMode!);
 
     if (options.encodings != null &&
@@ -402,10 +402,10 @@ class Chrome74 extends HandlerInterface {
           message: 'send() | enabling legacy simulcast for VP9 SVC');
 
       hackVp9Svc = true;
-      localSdpObject = SdpObject.fromJson(sdpTransform.parse(offer.sdp!));
+      localSdpObject = SdpObject.fromJson(sdp_transform.parse(offer.sdp!));
       offerMediaObject = localSdpObject.media[mediaSectionIdx['idx']];
 
-      sdpUnifiedPlanUtils.addLegacySimulcast(
+      sdp_unified_plan_utils.addLegacySimulcast(
           // {
           offerMediaObject: offerMediaObject,
           numStreams: layers.spatialLayers
@@ -413,7 +413,7 @@ class Chrome74 extends HandlerInterface {
           );
 
       offer = RTCSessionDescription(
-          sdpTransform.write(localSdpObject.toJson(), null), 'offer');
+          sdp_transform.write(localSdpObject.toJson(), null), 'offer');
     }
 
     debugger(
@@ -430,22 +430,23 @@ class Chrome74 extends HandlerInterface {
 
     var localDescription = await _pc!.getLocalDescription();
     localSdpObject =
-        SdpObject.fromJson(sdpTransform.parse(localDescription!.sdp!));
+        SdpObject.fromJson(sdp_transform.parse(localDescription!.sdp!));
     offerMediaObject = localSdpObject.media[mediaSectionIdx['idx']];
 
     // Set RTCP CNAME.
     sendingRtpParameters.rtcp!.cname =
-        sdpCommonUtils.getCname(offerMediaObject: offerMediaObject);
+        sdp_common_utils.getCname(offerMediaObject: offerMediaObject);
 
     // Set RTP encodings by parsing the SDP offer if no encodings are given.
     if (options.encodings == null) {
       sendingRtpParameters.encodings =
-          sdpUnifiedPlanUtils.getRtpEncodings(offerMediaObject);
+          sdp_unified_plan_utils.getRtpEncodings(offerMediaObject);
     }
     // Set RTP encodings by parsing the SDP offer and complete them with given
     // one if just a single encoding has been given.
     else if (options.encodings!.length == 1) {
-      var newEncodings = sdpUnifiedPlanUtils.getRtpEncodings(offerMediaObject);
+      var newEncodings =
+          sdp_unified_plan_utils.getRtpEncodings(offerMediaObject);
 
       // Object.assign(newEncodings[0], encodings[0]);
       newEncodings[0] = options.encodings![0];
@@ -683,7 +684,7 @@ class Chrome74 extends HandlerInterface {
     // m=application section.
     if (!_hasDataChannelMediaSection) {
       var offer = await _pc!.createOffer();
-      var localSdpObject = SdpObject.fromJson(sdpTransform.parse(offer.sdp!));
+      var localSdpObject = SdpObject.fromJson(sdp_transform.parse(offer.sdp!));
       var offerMediaObject =
           localSdpObject.media.firstWhere((m) => m.type == 'application');
 
@@ -755,18 +756,18 @@ class Chrome74 extends HandlerInterface {
     await _pc!.setRemoteDescription(offer);
 
     var answer = await _pc!.createAnswer();
-    var localSdpObject = SdpObject.fromJson(sdpTransform.parse(answer.sdp!));
+    var localSdpObject = SdpObject.fromJson(sdp_transform.parse(answer.sdp!));
     var answerMediaObject =
         localSdpObject.media.firstWhere((m) => m.mid == localId);
 
     // May need to modify codec parameters in the answer based on codec
     // parameters in the offer.
-    sdpCommonUtils.applyCodecParameters(
+    sdp_common_utils.applyCodecParameters(
         offerRtpParameters: options.rtpParameters,
         answerMediaObject: answerMediaObject);
 
     answer = RTCSessionDescription(
-        sdpTransform.write(localSdpObject.toJson(), null), 'answer');
+        sdp_transform.write(localSdpObject.toJson(), null), 'answer');
 
     if (!_transportReady) {
       await _setupTransport(
@@ -893,7 +894,7 @@ class Chrome74 extends HandlerInterface {
 
       if (!_transportReady) {
         var localSdpObject =
-            SdpObject.fromJson(sdpTransform.parse(answer.sdp!));
+            SdpObject.fromJson(sdp_transform.parse(answer.sdp!));
 
         await _setupTransport(
             localDtlsRole: 'client', localSdpObject: localSdpObject);
@@ -921,11 +922,11 @@ class Chrome74 extends HandlerInterface {
       ) async //: Promise<void>
   {
     localSdpObject ??= SdpObject.fromJson(
-        sdpTransform.parse((await _pc!.getLocalDescription())!.sdp!));
+        sdp_transform.parse((await _pc!.getLocalDescription())!.sdp!));
 
     // Get our local DTLS parameters.
     var dtlsParameters =
-        sdpCommonUtils.extractDtlsParameters(sdpObject: localSdpObject);
+        sdp_common_utils.extractDtlsParameters(sdpObject: localSdpObject);
 
     // Set our DTLS role.
     dtlsParameters.role = localDtlsRole!;

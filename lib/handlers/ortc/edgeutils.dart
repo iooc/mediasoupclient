@@ -27,9 +27,10 @@ RtpCapabilities getCapabilities() //: RtpCapabilities
 
       if (parameters.apt) parameters.apt = parameters.apt;
 
-      if (parameters['packetization-mode'])
-        // parameters['packetization-mode'] = Number(parameters['packetization-mode']);
-        parameters['packetization-mode'] = parameters['packetization-mode'];
+      if (parameters['packetization-mode']) {
+        parameters['packetization-mode'] =
+            int.parse(parameters['packetization-mode']);
+      }
     }
 
     // Delete emty parameter String in rtcpFeedback.
@@ -62,8 +63,9 @@ RtpParameters mangleRtpParameters(RtpParameters rtpParameters) //: RtpParameters
     }
 
     // Add codec.name (requried by Edge).
-    if (codec.mimeType != null && codec.name == null)
+    if (codec.mimeType != null && codec.name == null) {
       codec.name = codec.mimeType.split('/')[1];
+    }
 
     // Remove mimeType.
     // delete codec.mimeType;
