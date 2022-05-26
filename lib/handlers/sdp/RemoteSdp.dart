@@ -2,7 +2,7 @@
 
 import 'dart:developer';
 import 'package:flutter/cupertino.dart';
-import 'package:sdp_transform/sdp_transform.dart' as sdpTransform;
+import 'package:sdp_transform/sdp_transform.dart' as sdp_transform;
 
 import '../../producer.dart';
 import '../../rtpparameters.dart';
@@ -339,7 +339,7 @@ class RemoteSdp {
     // Increase SDP version.
     _sdpObject.origin.sessionVersion++;
 
-    return sdpTransform.write(_sdpObject.toJson(), null);
+    return sdp_transform.write(_sdpObject.toJson(), null);
   }
 
   void _addMediaSection(MediaSection newMediaSection) //: void
