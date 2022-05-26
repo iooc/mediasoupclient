@@ -28,6 +28,7 @@ IceCandidate _$IceCandidateFromJson(Map<String, dynamic> json) => IceCandidate(
       json['port'] as int,
       json['type'] as String,
       json['tcpType'] as String?,
+      json['component'] as int?,
     );
 
 Map<String, dynamic> _$IceCandidateToJson(IceCandidate instance) =>
@@ -39,6 +40,7 @@ Map<String, dynamic> _$IceCandidateToJson(IceCandidate instance) =>
       'port': instance.port,
       'type': instance.type,
       'tcpType': instance.tcpType,
+      'component': instance.component,
     };
 
 DtlsParameters _$DtlsParametersFromJson(Map<String, dynamic> json) =>

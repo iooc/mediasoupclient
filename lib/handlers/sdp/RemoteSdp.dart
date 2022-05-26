@@ -1,5 +1,6 @@
 // const logger = new Logger('RemoteSdp');
 
+import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:sdp_transform/sdp_transform.dart' as sdp_transform;
@@ -338,7 +339,7 @@ class RemoteSdp {
   {
     // Increase SDP version.
     _sdpObject.origin.sessionVersion++;
-
+    // print(jsonEncode(_sdpObject.media[0].rtp));
     return sdp_transform.write(_sdpObject.toJson(), null);
   }
 

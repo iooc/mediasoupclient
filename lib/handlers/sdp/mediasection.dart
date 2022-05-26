@@ -38,7 +38,7 @@ abstract class MediaSection {
 
         // mediasoup does mandates rtcp-mux so candidates component is always
         // RTP (1).
-        // candidateObject.component = 1;
+        candidateObject.component = 1;
         // candidateObject.foundation = candidate.foundation;
         // candidateObject.ip = candidate.ip;
         // candidateObject.port = candidate.port;
@@ -322,8 +322,8 @@ class AnswerMediaSection extends MediaSection {
 
           // Allow both 1 byte and 2 bytes length header extensions.
           if (extmapAllowMixed &&
-              offerMediaObject!
-                  .extmapAllowMixed! /* == 'extmap-allow-mixed'*/) {
+              offerMediaObject!.extmapAllowMixed !=
+                  null /* == 'extmap-allow-mixed'*/) {
             _mediaObject.extmapAllowMixed = true; // 'extmap-allow-mixed';
           }
 

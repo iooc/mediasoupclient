@@ -160,7 +160,10 @@ MediaObject _$MediaObjectFromJson(Map<String, dynamic> json) => MediaObject(
               ?.map((e) => Ssrc.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      extmapAllowMixed: json['extmapAllowMixed'] as bool? ?? false,
+      extmapAllowMixed:
+          json['extmapAllowMixed'] != null || json['extmap-allow-mixed'] != null
+              ? true
+              : null,
       rids: (json['rids'] as List<dynamic>?)
               ?.map((e) => Rid.fromJson(e as Map<String, dynamic>))
               .toList() ??

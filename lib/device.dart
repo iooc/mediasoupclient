@@ -397,7 +397,7 @@ class Device {
 
       // Generate our receiving RTP capabilities for receiving media.
       _recvRtpCapabilities =
-          ortc.getRecvRtpCapabilities(_extendedRtpCapabilities);
+          ortc.getRecvRtpCapabilities(_extendedRtpCapabilities!);
 
       // This may throw.
       ortc.validateRtpCapabilities(_recvRtpCapabilities!);

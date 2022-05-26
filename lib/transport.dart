@@ -130,6 +130,7 @@ class IceParameters {
 
 @JsonSerializable()
 class IceCandidate {
+  int? component;
   /**
 	 * Unique identifier that allows ICE to correlate candidates that appear on
 	 * multiple transports.
@@ -168,6 +169,7 @@ class IceCandidate {
     this.port,
     this.type,
     this.tcpType,
+    this.component,
   );
 
   factory IceCandidate.fromJson(Map<String, dynamic> json) =>

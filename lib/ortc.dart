@@ -595,11 +595,11 @@ ExtendedRtpCapabilities getExtendedRtpCapabilities(
 /// Generate RTP capabilities for receiving media based on the given extended
 /// RTP capabilities.
 RtpCapabilities getRecvRtpCapabilities(
-    extendedRtpCapabilities) //: RtpCapabilities
+    ExtendedRtpCapabilities extendedRtpCapabilities) //: RtpCapabilities
 {
   var rtpCapabilities = RtpCapabilities(codecs: [], headerExtensions: []);
 
-  for (var extendedCodec in extendedRtpCapabilities.codecs) {
+  for (var extendedCodec in extendedRtpCapabilities.codecs!) {
     var codec = RtpCodecCapability(
         extendedCodec.kind, extendedCodec.mimeType, extendedCodec.clockRate,
         preferredPayloadType: extendedCodec.remotePayloadType,
@@ -622,7 +622,7 @@ RtpCapabilities getRecvRtpCapabilities(
     // TODO: In the future, we need to add FEC, CN, etc, codecs.
   }
 
-  for (var extendedExtension in extendedRtpCapabilities.headerExtensions) {
+  for (var extendedExtension in extendedRtpCapabilities.headerExtensions!) {
     // Ignore RTP extensions not valid for receiving.
     if (extendedExtension.direction != 'sendrecv' &&
         extendedExtension.direction != 'recvonly') {
@@ -892,7 +892,7 @@ bool canSend(
 /// capabilities.
 bool canReceive(
     RtpParameters rtpParameters, //: RtpParameters,
-    extendedRtpCapabilities //: any
+    ExtendedRtpCapabilities extendedRtpCapabilities //: any
     ) //: boolean
 {
   // This may throw.
@@ -902,7 +902,7 @@ bool canReceive(
 
   var firstMediaCodec = rtpParameters.codecs[0];
 
-  return (extendedRtpCapabilities.codecs as List)
+  return (extendedRtpCapabilities.codecs)!
       .any((codec) => codec.remotePayloadType == firstMediaCodec.payloadType);
 }
 
@@ -1026,10 +1026,9 @@ List<RtcpFeedback> reduceRtcpFeedback(
   return reducedRtcpFeedback;
 }
 
-class ExtendedRtpCapabilities extends RtpCapabilities {
-  @override
+class ExtendedRtpCapabilities /*extends RtpCapabilities*/ {
   final List<ExtendedRtpCodec>? codecs;
-  @override
+
   final List<ExtendedRtpHeaderExtension>? headerExtensions;
 
   ExtendedRtpCapabilities({
