@@ -487,9 +487,14 @@ class Chrome74 extends HandlerInterface {
 
     debugger(
         when: false,
-        message: 'send() | calling pc.setRemoteDescription() [answer:$answer]');
-
-    await _pc!.setRemoteDescription(answer);
+        message:
+            'send() | calling pc.setRemoteDescription() [answer:${answer.toMap()}]');
+    print(answer.toMap());
+    try {
+      await _pc!.setRemoteDescription(answer);
+    } catch (ex) {
+      throw Exception(ex);
+    }
 
     // Store in the map.
     _mapMidTransceiver[localId] = transceiver;

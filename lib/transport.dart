@@ -161,6 +161,18 @@ class IceCandidate {
 	 */
   String? tcpType; //: 'active' | 'passive' | 'so';
 
+  String transport;
+
+  String? raddr;
+
+  int? rport;
+
+  var generation;
+
+  var networkId;
+
+  var networkCost;
+
   IceCandidate(
     this.foundation,
     this.priority,
@@ -170,6 +182,12 @@ class IceCandidate {
     this.type,
     this.tcpType,
     this.component,
+    this.transport,
+    this.raddr,
+    this.rport,
+    this.generation,
+    this.networkId,
+    this.networkCost,
   );
 
   factory IceCandidate.fromJson(Map<String, dynamic> json) =>

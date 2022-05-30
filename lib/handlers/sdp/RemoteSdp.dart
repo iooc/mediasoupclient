@@ -339,7 +339,10 @@ class RemoteSdp {
   {
     // Increase SDP version.
     _sdpObject.origin.sessionVersion++;
-    // print(jsonEncode(_sdpObject.media[0].rtp));
+
+    for (var element in _sdpObject.media) {
+      element.extmapAllowMixed = null;
+    }
     return sdp_transform.write(_sdpObject.toJson(), null);
   }
 
