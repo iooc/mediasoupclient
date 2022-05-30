@@ -242,7 +242,7 @@ void validateRtpCodecParameters(RtpCodecParameters codec) //: void
   // if (typeof codec.clockRate !== 'number')
   // 	throw new TypeError('missing codec.clockRate');
 
-  var kind = mimeTypeMatch[1].group(0)!.toLowerCase(); // as MediaKind;
+  var kind = mimeTypeMatch[0].group(1)!.toLowerCase(); // as MediaKind;
 
   // channels is optional. If unset, set it to 1 (just if audio).
   if (kind == 'audio') {
@@ -377,7 +377,7 @@ void validateRtcpParameters(RtcpParameters rtcp) //: void
   // 	throw new TypeError('invalid rtcp.cname');
 
   // reducedSize is optional. If unset set it to true.
-  if (rtcp.reducedSize == null &&
+  if (rtcp.reducedSize == null ||
       !rtcp.reducedSize! /*|| typeof rtcp.reducedSize !== 'boolean'*/) {
     rtcp.reducedSize = true;
   }
@@ -457,7 +457,7 @@ void validateSctpStreamParameters(SctpStreamParameters params) //: void
   var orderedGiven = false;
 
   // if (typeof params.ordered === 'boolean')
-  if (params.ordered == null && !params.ordered!) {
+  if (params.ordered == null || !params.ordered!) {
     orderedGiven = true;
   } else {
     params.ordered = true;

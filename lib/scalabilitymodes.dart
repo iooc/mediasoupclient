@@ -20,8 +20,8 @@ ScalabilityMode parse({String? scalabilityMode = ''}) {
 
   if (match.isNotEmpty) {
     return ScalabilityMode(
-      int.parse(match.elementAt(1).group(0)!),
-      int.parse(match.elementAt(2).group(0)!),
+      int.parse(match.elementAt(0).group(1)!),
+      int.parse(match.elementAt(0).group(2)!),
     );
     // 	spatialLayers  : Number(match[1]),
     // 	temporalLayers : Number(match[2])
