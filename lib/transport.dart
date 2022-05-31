@@ -161,16 +161,12 @@ class IceCandidate {
 	 */
   String? tcpType; //: 'active' | 'passive' | 'so';
 
+// 补充 SDP 属性
   String transport;
-
   String? raddr;
-
   int? rport;
-
   var generation;
-
   var networkId;
-
   var networkCost;
 
   IceCandidate(
