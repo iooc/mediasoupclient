@@ -648,48 +648,48 @@ class Transport extends EnhancedEventEmitter {
       var rtpParameters = result.rtpParameters;
       var rtpSender = result.rtpSender;
 
-      try {
-        // This will fill rtpParameters's missing fields with default values.
-        ortc.validateRtpParameters(rtpParameters);
+      // try {
+      // This will fill rtpParameters's missing fields with default values.
+      ortc.validateRtpParameters(rtpParameters);
 
-        // const { id }
-        var args = <String, dynamic>{};
-        args['kind'] = options.track!.kind;
-        args['rtpParameters'] = rtpParameters;
-        args['appData'] = options.appData;
-        var id = await safeEmitAsPromise('produce', args
-            // {
-            // 	kind : track.kind,
-            // 	rtpParameters,
-            // 	appData
-            // }
-            );
-        // var id = safePromise.id;
+      // const { id }
+      var args = <String, dynamic>{};
+      args['kind'] = options.track!.kind;
+      args['rtpParameters'] = rtpParameters;
+      args['appData'] = options.appData;
+      var safePromise = await safeEmitAsPromise('produce', args
+          // {
+          // 	kind : track.kind,
+          // 	rtpParameters,
+          // 	appData
+          // }
+          );
+      var id = safePromise['id'];
 
-        var producer = Producer(
-            id,
-            localId,
-            rtpSender,
-            options.track,
-            rtpParameters,
-            options.stopTracks!,
-            options.disableTrackOnPause!,
-            options.zeroRtpOnPause!,
-            options.appData);
+      var producer = Producer(
+          id,
+          localId,
+          rtpSender,
+          options.track,
+          rtpParameters,
+          options.stopTracks!,
+          options.disableTrackOnPause!,
+          options.zeroRtpOnPause!,
+          options.appData);
 
-        // this._producers.set(producer.id, producer);
-        _producers[producer.id] = producer;
-        _handleProducer(producer);
+      // this._producers.set(producer.id, producer);
+      _producers[producer.id] = producer;
+      _handleProducer(producer);
 
-        // Emit observer event.
-        _observer.safeEmit('newproducer', {'producer': producer});
+      // Emit observer event.
+      _observer.safeEmit('newproducer', {'producer': producer});
 
-        return producer;
-      } catch (error) {
-        _handler.stopSending(localId).catchError((_) => {});
+      return producer;
+      // } catch (error) {
+      //   _handler.stopSending(localId).catchError((_) => {});
 
-        throw error;
-      }
+      //   throw error;
+      // }
     }, 'transport.produce()')
         // This catch is needed to stop the given track if the command above
         // failed due to closed Transport.

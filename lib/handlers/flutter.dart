@@ -1,6 +1,7 @@
 // const logger = new Logger('Chrome74');
 
 import 'dart:developer';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../rtpparameters.dart';
@@ -421,6 +422,16 @@ class Chrome74 extends HandlerInterface {
         message: 'send() | calling pc.setLocalDescription() [offer:$offer]');
 
     await _pc!.setLocalDescription(offer);
+    // 是通过此代码获取到 mid 么
+    if (!kIsWeb) {
+      final transceivers = await _pc!.getTransceivers();
+      transceiver = transceivers.firstWhere(
+        (_transceiver) =>
+            _transceiver.sender.track?.id == options.track.id &&
+            _transceiver.sender.track?.kind == options.track.kind,
+        orElse: () => throw 'No transceiver found',
+      );
+    }
 
     // We can now get the transceiver.mid.
     var localId = transceiver.mid;
