@@ -24,7 +24,7 @@ IceCandidate _$IceCandidateFromJson(Map<String, dynamic> json) => IceCandidate(
       json['foundation'].toString(),
       json['priority'] as int,
       json['ip'] as String,
-      json['protocol'] as String,
+      json['protocol'] as String?,
       json['port'] as int,
       json['type'] as String,
       json['tcpType'] as String?,

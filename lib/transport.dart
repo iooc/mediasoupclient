@@ -147,7 +147,7 @@ class IceCandidate {
   /**
 	 * The protocol of the candidate.
 	 */
-  String protocol; //: 'udp' | 'tcp';
+  String? protocol; //: 'udp' | 'tcp';
   /**
 	 * The port for the candidate.
 	 */
@@ -672,9 +672,11 @@ class Transport extends EnhancedEventEmitter {
           rtpSender,
           options.track,
           rtpParameters,
-          options.stopTracks!,
-          options.disableTrackOnPause!,
-          options.zeroRtpOnPause!,
+          options.stopTracks == null ? true : options.stopTracks!,
+          options.disableTrackOnPause == null
+              ? true
+              : options.disableTrackOnPause!,
+          options.zeroRtpOnPause == null ? false : options.zeroRtpOnPause!,
           options.appData);
 
       // this._producers.set(producer.id, producer);
