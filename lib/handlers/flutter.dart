@@ -761,7 +761,7 @@ class Chrome74 extends HandlerInterface {
         offerRtpParameters: options.rtpParameters,
         streamId: options.rtpParameters.rtcp!.cname!,
         trackId: options.trackId);
-
+    print(_remoteSdp!.getSdp());
     var offer = RTCSessionDescription(_remoteSdp!.getSdp(), 'offer');
 
     debugger(

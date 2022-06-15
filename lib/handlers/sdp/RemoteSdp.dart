@@ -206,7 +206,7 @@ class RemoteSdp {
     var idx = _midToIndex[mid];
     OfferMediaSection? mediaSection; //: OfferMediaSection | undefined;
 
-    if (idx != 0) mediaSection = _mediaSections[idx!] as OfferMediaSection;
+    if (idx != null) mediaSection = _mediaSections[idx] as OfferMediaSection;
 
     // Unified-Plan or different media kind.
     if (mediaSection == null) {

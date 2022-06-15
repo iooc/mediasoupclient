@@ -485,7 +485,9 @@ class OfferMediaSection extends MediaSection {
                 codec: getCodecName(codec),
                 rate: codec.clockRate);
 
-            if (codec.channels! > 1) rtp.encoding = codec.channels!;
+            if (codec.channels != null && codec.channels! > 1) {
+              rtp.encoding = codec.channels;
+            }
 
             _mediaObject.rtp!.add(rtp);
 
