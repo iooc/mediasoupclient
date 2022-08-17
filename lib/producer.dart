@@ -52,6 +52,22 @@ class ProducerCodecOptions {
     this.videoGoogleMaxBitrate,
     this.videoGoogleMinBitrate,
   });
+
+  toJson() {
+    var map = Map<String, dynamic>();
+
+    map['opusStereo'] = opusStereo;
+    map['opusFec'] = opusFec;
+    map['opusDtx'] = opusDtx;
+    map['opusMaxPlaybackRate'] = opusMaxPlaybackRate;
+    map['opusMaxAverageBitrate'] = opusMaxAverageBitrate;
+    map['opusPtime'] = opusPtime;
+    map['videoGoogleStartBitrate'] = videoGoogleStartBitrate;
+    map['videoGoogleMaxBitrate'] = videoGoogleMaxBitrate;
+    map['videoGoogleMinBitrate'] = videoGoogleMinBitrate;
+
+    return map;
+  }
 }
 
 // const logger = new Logger('Producer');

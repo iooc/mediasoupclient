@@ -751,15 +751,15 @@ class Chrome74 extends HandlerInterface {
         message:
             'receive() [trackId:${options.trackId}, kind:${options.kind}]');
 
-    var localId =
-        options.rtpParameters.mid; // || String(this._mapMidTransceiver.size);
-    if (localId!.isEmpty) localId = _mapMidTransceiver.length.toString();
+    var localId = options.rtpParameters.mid ??
+        _mapMidTransceiver.length
+            .toString(); // || String(this._mapMidTransceiver.size);
 
     _remoteSdp!.receive(
         mid: localId,
         kind: options.kind,
         offerRtpParameters: options.rtpParameters,
-        streamId: options.rtpParameters.rtcp!.cname!,
+        streamId: options.rtpParameters.rtcp!.cname,
         trackId: options.trackId);
     print(_remoteSdp!.getSdp());
     var offer = RTCSessionDescription(_remoteSdp!.getSdp(), 'offer');
