@@ -403,6 +403,7 @@ class RtpEncodingParameters {
   String? priority; //?: 'very-low' | 'low' | 'medium' | 'high';
   String? networkPriority; //?: 'very-low' | 'low' | 'medium' | 'high';
   bool? active;
+  int? minBitrate;
 
   RtpEncodingParameters({
     this.ssrc,
@@ -414,6 +415,7 @@ class RtpEncodingParameters {
     this.scaleResolutionDownBy,
     this.maxBitrate,
     this.maxFramerate,
+    this.minBitrate,
     this.adaptivePtime,
     this.priority,
     this.networkPriority,

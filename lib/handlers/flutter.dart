@@ -38,7 +38,7 @@ class Chrome74 extends HandlerInterface {
       _mapMidTransceiver = //: Map<string, RTCRtpTransceiver> =
       {};
   // Local stream for sending.
-  // late MediaStream _sendStream; // = MediaStream();
+  late MediaStream _sendStream; // = MediaStream();
   // Whether a DataChannel m=application section has been created.
   bool _hasDataChannelMediaSection = false;
   // Sending DataChannel id value counter. Incremented for each new DataChannel.
@@ -56,9 +56,9 @@ class Chrome74 extends HandlerInterface {
 
   Chrome74() : super() {
     // super();
-    // createLocalMediaStream('local9087').then((value) {
-    //   _sendStream = value;
-    // });
+    createLocalMediaStream('local9087').then((value) {
+      _sendStream = value;
+    });
   }
 
   @override
@@ -366,7 +366,7 @@ class Chrome74 extends HandlerInterface {
           rid: element.rid,
           maxBitrate: element.maxBitrate,
           maxFramerate: element.maxFramerate,
-          minBitrate: element.maxBitrate,
+          minBitrate: element.minBitrate,
           scaleResolutionDownBy: element.scaleResolutionDownBy,
           ssrc: element.ssrc,
         );
@@ -377,7 +377,7 @@ class Chrome74 extends HandlerInterface {
         track: options.track,
         init: RTCRtpTransceiverInit(
             direction: TransceiverDirection.SendOnly, //'sendonly',
-            streams: [options.stream!],
+            streams: [_sendStream],
             sendEncodings: codes));
     var offer = await _pc!.createOffer();
     var localSdpObject = SdpObject.fromJson(sdp_transform.parse(offer.sdp!));
